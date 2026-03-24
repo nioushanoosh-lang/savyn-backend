@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FinAdvisor — Plaid Test</title>
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f5f0e8; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    p { color: #7a6e5f; margin-bottom: 32px; }
+    button { background: #1a1209; color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #c8341a; }
+    #status { margin-top: 24px; color: #1a6b45; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>FinAdvisor Plaid Test</h1>
+  <p>Connect a fake Sandbox bank account to test the integration</p>
+  <button onclick="connectBank()">Connect Bank Account</button>
+  <div id="status"></div>
+<script>
+async function connectBank() {
+  const status = document.getElementById('status');
+  status.textContent = 'Getting link token...';
+  const res = await fetch('http://localhost:3000/api/create-link-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const data = await res.json();
+  const linkToken = data.link_token;
+  status.textContent = 'Opening Plaid...';
+  const handler = Plaid.create({
+    token: linkToken,
+    onSuccess: async (public_token, metadata) => {
+      status.textContent = 'Exchanging token...';
+      await fetch('http://localhost:3000/api/exchange-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ public_token })
+      });
+      status.textContent = 'Bank connected! Fetching balances...';
+      const balRes = await fetch('http://localhost:3000/api/balances');
+      const balData = await balRes.json();
+      console.log('BALANCES:', balData);
+      status.textContent = 'Success! Check the browser console (Command + Option + J)';
+    },
+    onExit: (err) => {
+      if (err) status.textContent = 'Error: ' + err.message;
+      else status.textContent = 'Cancelled.';
+    }
+  });
+  handler.open();
+}
+</script>
+</body>
+</html>
