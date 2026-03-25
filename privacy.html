@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Savyn</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f9f7;
+    --navy: #0f2137;
+    --navy2: #1a3352;
+    --emerald: #0e6655;
+    --emerald2: #1a8a70;
+    --emerald-pale: #e8f5f2;
+    --ink: #0f1f12;
+    --ink2: #2c3e2e;
+    --ink3: #6b8c7a;
+    --cream: #ffffff;
+    --border: rgba(14,102,85,0.1);
+    --shadow: 0 2px 12px rgba(15,33,55,0.06);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+  }
+
+  .logo em { font-style: italic; color: #25a882; }
+
+  .back-link {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: white; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    padding: 60px 24px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(14,102,85,0.2) 0%, transparent 60%);
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--emerald2);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+
+  .hero-title em { font-style: italic; color: #25a882; }
+
+  .hero-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* CONTENT */
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  .intro-card {
+    background: var(--emerald-pale);
+    border: 1px solid rgba(14,102,85,0.15);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+
+  .intro-card p {
+    font-size: 15px;
+    color: var(--emerald);
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  .intro-card strong { font-weight: 600; }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 48px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .section-header {
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fafffe;
+  }
+
+  .section-number {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.3px;
+  }
+
+  .section-body {
+    padding: 24px 28px;
+  }
+
+  .section-body p {
+    font-size: 14.5px;
+    color: var(--ink2);
+    margin-bottom: 14px;
+    line-height: 1.75;
+  }
+
+  .section-body p:last-child { margin-bottom: 0; }
+
+  .section-body ul {
+    list-style: none;
+    margin: 12px 0 14px;
+  }
+
+  .section-body ul li {
+    font-size: 14.5px;
+    color: var(--ink2);
+    padding: 6px 0 6px 20px;
+    position: relative;
+    line-height: 1.65;
+    border-bottom: 1px solid rgba(14,102,85,0.06);
+  }
+
+  .section-body ul li:last-child { border-bottom: none; }
+
+  .section-body ul li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--emerald2);
+    font-size: 10px;
+    top: 9px;
+  }
+
+  .section-body strong { color: var(--navy); font-weight: 600; }
+
+  .highlight-box {
+    background: var(--emerald-pale);
+    border-left: 3px solid var(--emerald);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: var(--emerald);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  /* CONTACT */
+  .contact-card {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    border-radius: 20px;
+    padding: 36px;
+    text-align: center;
+    margin-top: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 20%, rgba(14,102,85,0.2) 0%, transparent 60%);
+  }
+
+  .contact-card-content { position: relative; z-index: 1; }
+
+  .contact-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+
+  .contact-sub {
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    font-weight: 300;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .contact-email {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    color: white;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(14,102,85,0.3);
+  }
+
+  .contact-email:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(14,102,85,0.4); }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy);
+    padding: 24px;
+    text-align: center;
+  }
+
+  .footer-text {
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+    font-family: 'Jost', sans-serif;
+    line-height: 1.6;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 8px;
+  }
+
+  .footer-links a {
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: #25a882; }
+
+  /* EFFECTIVE DATE */
+  .effective-date {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink3);
+    font-family: 'Jost', sans-serif;
+    margin-bottom: 48px;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Sa<em>vyn</em></a>
+  <a href="/" class="back-link">← Back to app</a>
+</header>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Legal</div>
+    <h1 class="hero-title">Privacy <em>Policy</em></h1>
+    <p class="hero-sub">How Savyn collects, uses, and protects your financial data</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <p class="effective-date">Effective Date: March 24, 2026 · Last Updated: March 24, 2026</p>
+
+  <div class="intro-card">
+    <p>At Savyn, <strong>your privacy is our highest priority.</strong> We built this app to help you save money and pay off debt faster — not to sell your data. This policy explains exactly what we collect, why we collect it, and how we protect it. We will never sell your personal or financial information to third parties.</p>
+  </div>
+
+  <!-- 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">Information We Collect</div>
+    </div>
+    <div class="section-body">
+      <p><strong>Account Information</strong> — When you create a Savyn account, we collect your email address and the password you create (stored as a secure hash, never in plain text).</p>
+      <p><strong>Financial Data via Plaid</strong> — When you connect your bank accounts, loans, or credit cards, we use Plaid (a third-party financial data provider) to securely retrieve:</p>
+      <ul>
+        <li>Account balances and account names</li>
+        <li>Transaction history (to calculate spending patterns and upcoming bills)</li>
+        <li>Loan balances, interest rates, and minimum payments</li>
+        <li>Credit card balances and APR information</li>
+      </ul>
+      <div class="highlight-box">
+        🔒 We never store your bank login credentials. Plaid handles authentication using OAuth — your username and password go directly to your bank, never to Savyn.
+      </div>
+      <p><strong>Usage Data</strong> — We collect basic app usage information such as which features you use and how often, to improve the product. This data is anonymous and aggregated.</p>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">How We Use Your Information</div>
+    </div>
+    <div class="section-body">
+      <p>We use your financial data for one purpose: <strong>to provide you with personalized debt payoff recommendations and savings insights.</strong></p>
+      <ul>
+        <li>Calculate your disposable income after bills and safety buffer</li>
+        <li>Identify your highest-cost debt using the avalanche method</li>
+        <li>Generate daily recommendations on how much extra to pay</li>
+        <li>Project interest savings and updated payoff dates</li>
+        <li>Power the Savyn AI advisor with your account context</li>
+        <li>Track your progress and celebrate milestones</li>
+      </ul>
+      <p>We do <strong>not</strong> use your data for advertising, credit underwriting, marketing targeting, or any purpose beyond delivering the Savyn service to you.</p>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div class="section-title">How We Share Your Information</div>
+    </div>
+    <div class="section-body">
+      <p>We do not sell, rent, or trade your personal or financial information. We share data only in these limited circumstances:</p>
+      <ul>
+        <li><strong>Plaid</strong> — To connect your financial accounts. Plaid's privacy policy governs their use of your data at plaid.com/legal</li>
+        <li><strong>Anthropic (Claude AI)</strong> — Your financial summary is sent to Claude AI to power the advisor chat feature. No raw account numbers or credentials are shared</li>
+        <li><strong>Service providers</strong> — Hosting, analytics, and infrastructure providers who are contractually bound to protect your data</li>
+        <li><strong>Legal requirements</strong> — If required by law, court order, or to protect the safety of our users</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div class="section-title">Data Security</div>
+    </div>
+    <div class="section-body">
+      <p>We take the security of your financial data seriously and implement industry-standard protections:</p>
+      <ul>
+        <li>All data transmitted between your device and our servers is encrypted using TLS 1.3</li>
+        <li>We never store raw bank credentials, card numbers, or account passwords</li>
+        <li>Plaid access tokens are stored securely and never exposed to the client</li>
+        <li>Our servers are hosted on Railway with encrypted storage</li>
+        <li>We conduct regular security reviews of our codebase and infrastructure</li>
+      </ul>
+      <div class="highlight-box">
+        While we implement strong security measures, no system is 100% secure. We encourage you to use a strong unique password for your Savyn account and enable two-factor authentication when available.
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div class="section-title">Your Rights (CCPA — California Residents)</div>
+    </div>
+    <div class="section-body">
+      <p>As a California-based company, we comply fully with the California Consumer Privacy Act (CCPA). You have the right to:</p>
+      <ul>
+        <li><strong>Know</strong> what personal information we collect and how we use it</li>
+        <li><strong>Access</strong> a copy of all personal data we hold about you</li>
+        <li><strong>Delete</strong> your personal data from our systems</li>
+        <li><strong>Opt out</strong> of the sale of your personal information (we do not sell data)</li>
+        <li><strong>Non-discrimination</strong> — we will not discriminate against you for exercising your privacy rights</li>
+      </ul>
+      <p>To exercise any of these rights, email us at <strong>privacy@savynapp.com</strong> and we will respond within 45 days.</p>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div class="section-title">Data Retention</div>
+    </div>
+    <div class="section-body">
+      <p>We retain your data for as long as your account is active. If you delete your account, we will permanently delete all your personal and financial data within 30 days, except where we are required by law to retain certain records.</p>
+      <p>You can request account deletion at any time by emailing <strong>privacy@savynapp.com</strong> or through the Profile settings in the app.</p>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div class="section-title">Children's Privacy</div>
+    </div>
+    <div class="section-body">
+      <p>Savyn is not intended for use by anyone under the age of 18. We do not knowingly collect personal information from children. If you believe a minor has provided us with personal information, please contact us immediately at privacy@savynapp.com and we will delete it promptly.</p>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <div class="section-title">Changes to This Policy</div>
+    </div>
+    <div class="section-body">
+      <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last Updated" date at the top of this page and notify you via email or in-app notification if the changes are material.</p>
+      <p>Your continued use of Savyn after any changes constitutes your acceptance of the updated policy.</p>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="contact-card">
+    <div class="contact-card-content">
+      <div class="contact-title">Questions about your privacy?</div>
+      <p class="contact-sub">We're committed to transparency. If you have any questions about this policy or how we handle your data, we'll respond within 48 hours.</p>
+      <a href="mailto:privacy@savynapp.com" class="contact-email">privacy@savynapp.com</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p class="footer-text">© 2026 Savyn. All rights reserved. Huntington Beach, California.</p>
+  <div class="footer-links">
+    <a href="/">App</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="mailto:hello@savynapp.com">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
