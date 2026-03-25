@@ -1154,3 +1154,72 @@ loadPlaidData();
 </script>
 </body>
 </html>
+// ── PAYOFF OPTIMIZER ──
+app.get('/api/optimize', async (req, res) => {
+  try {
+    const accessToken = accessTokens['test-user-001'];
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+
+    const [balRes, txRes, liabRes] = await Promise.all([
+      plaidClient.accountsBalanceGet({ access_token: accessToken }),
+      plaidClient.transactionsGet({
+        access_token: accessToken,
+        start_date: '2024-01-01',
+        end_date: '2025-12-31',
+      }),
+      plaidClient.liabilitiesGet({ access_token: accessToken }),
+    ]);
+
+    const accounts = balRes.data.accounts;
+    const transactions = txRes.data.transactions;
+    const liabilities = liabRes.data.liabilities;
+
+    const checking = accounts.find(a => a.subtype === 'checking');
+    const checkingBalance = checking ? checking.balances.available : 0;
+
+    const totalSpend = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+    const avgWeeklySpend = totalSpend / Math.max(1, transactions.length / 7);
+    const safetyBuffer = avgWeeklySpend * 2;
+    const recurringBills = transactions.filter(t => t.amount > 50 && t.payment_channel === 'online').slice(0, 5).reduce((sum, t) => sum + t.amount, 0);
+    const disposable = Math.max(0, checkingBalance - recurringBills - safetyBuffer);
+
+    const creditCards = liabilities.credit || [];
+    const studentLoans = liabilities.student || [];
+
+    let allLoans = [
+      ...creditCards.map(c => ({ name: c.name || 'Credit Card', balance: c.last_statement_balance || 0, apr: c.aprs?.[0]?.apr_percentage || 0, minPayment: c.minimum_payment_amount || 0, type: 'credit' })),
+      ...studentLoans.map(l => ({ name: l.loan_name || 'Student Loan', balance: l.outstanding_principal_amount || 0, apr: l.interest_rate_percentage || 0, minPayment: l.minimum_payment_amount || 0, type: 'student' }))
+    ];
+
+    allLoans.sort((a, b) => b.apr - a.apr);
+    const topLoan = allLoans[0];
+
+    if (!topLoan || disposable < 50) {
+      return res.json({ recommendation: null, message: 'Not enough disposable income for an extra payment right now.', disposable: Math.round(disposable), loans: allLoans });
+    }
+
+    const extraPayment = Math.min(Math.round(disposable * 0.6), Math.round(topLoan.balance));
+    const monthlyRate = topLoan.apr / 100 / 12;
+    const currentMonths = monthlyRate > 0 ? Math.log(topLoan.minPayment / (topLoan.minPayment - topLoan.balance * monthlyRate)) / Math.log(1 + monthlyRate) : topLoan.balance / (topLoan.minPayment || 1);
+    const newBalance = topLoan.balance - extraPayment;
+    const newMonths = monthlyRate > 0 ? Math.log(topLoan.minPayment / (topLoan.minPayment - newBalance * monthlyRate)) / Math.log(1 + monthlyRate) : newBalance / (topLoan.minPayment || 1);
+    const monthsSaved = Math.max(0, Math.round(currentMonths - newMonths));
+    const interestSaved = Math.round(monthsSaved * topLoan.minPayment * (topLoan.apr / 100 / 12));
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + Math.round(newMonths));
+    const payoffStr = payoffDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+
+    res.json({
+      recommendation: { loanName: topLoan.name, apr: topLoan.apr, extraPayment, interestSaved: Math.max(0, interestSaved), monthsSaved, newPayoffDate: payoffStr, currentBalance: Math.round(topLoan.balance) },
+      disposable: Math.round(disposable),
+      checkingBalance: Math.round(checkingBalance),
+      safetyBuffer: Math.round(safetyBuffer),
+      loans: allLoans,
+      message: `Pay $${extraPayment} extra on your ${topLoan.name} today. You'll save $${Math.max(0, interestSaved)} in interest and finish ${monthsSaved} months early.`
+    });
+
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Optimizer failed: ' + err.message });
+  }
+});
