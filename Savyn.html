@@ -362,15 +362,26 @@ async function openPlaidLink() {
 
 async function loadPlaidData() {
   try {
-    const res = await fetch(BACKEND + '/api/balances');
-    const data = await res.json();
-    if(data.accounts) {
+    const balRes = await fetch(BACKEND + '/api/balances');
+    const balData = await balRes.json();
+    if(balData.accounts) {
       let total = 0;
-      data.accounts.forEach(a => {
+      balData.accounts.forEach(a => {
         if(a.type === 'depository') total += a.balances.current || 0;
       });
       const el = document.getElementById('netWorth');
       if(el) el.textContent = '$' + total.toLocaleString();
+    }
+    const optRes = await fetch(BACKEND + '/api/optimize');
+    const optData = await optRes.json();
+    if(optData.recommendation) {
+      const rec = optData.recommendation;
+      const msgEl = document.querySelector('.rec-message');
+      if(msgEl) msgEl.innerHTML = 'Pay <strong>$' + rec.extraPayment.toLocaleString() + ' extra</strong> on your ' + rec.loanName + ' today. You will save <span class="em-text">$' + rec.interestSaved.toLocaleString() + ' in interest</span> and finish <strong>' + rec.monthsSaved + ' months early.</strong> Your checking has the room.';
+      const chips = document.querySelectorAll('.rec-chip-val');
+      if(chips[0]) chips[0].textContent = '$' + rec.interestSaved.toLocaleString();
+      if(chips[1]) chips[1].textContent = rec.monthsSaved + ' mo';
+      if(chips[2]) chips[2].textContent = rec.newPayoffDate;
     }
   } catch(err) { console.log('Could not load data', err); }
 }
