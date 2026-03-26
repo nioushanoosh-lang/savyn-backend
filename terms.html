@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Savyn</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f9f7;
+    --navy: #0f2137;
+    --navy2: #1a3352;
+    --emerald: #0e6655;
+    --emerald2: #1a8a70;
+    --emerald-pale: #e8f5f2;
+    --ink: #0f1f12;
+    --ink2: #2c3e2e;
+    --ink3: #6b8c7a;
+    --cream: #ffffff;
+    --border: rgba(14,102,85,0.1);
+    --shadow: 0 2px 12px rgba(15,33,55,0.06);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+  }
+
+  .logo em { font-style: italic; color: #25a882; }
+
+  .back-link {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: white; }
+
+  .hero {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    padding: 60px 24px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(14,102,85,0.2) 0%, transparent 60%);
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+  .hero-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--emerald2); font-weight: 500; margin-bottom: 12px; }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+
+  .hero-title em { font-style: italic; color: #25a882; }
+  .hero-sub { color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 300; }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; }
+
+  .effective-date { text-align: center; font-size: 12px; color: var(--ink3); margin-bottom: 48px; letter-spacing: 0.5px; }
+
+  .intro-card {
+    background: var(--emerald-pale);
+    border: 1px solid rgba(14,102,85,0.15);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+
+  .intro-card p { font-size: 15px; color: var(--emerald); font-weight: 400; line-height: 1.7; }
+  .intro-card strong { font-weight: 600; }
+
+  .section {
+    margin-bottom: 48px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .section-header {
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fafffe;
+  }
+
+  .section-number {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 700; color: var(--navy); letter-spacing: -0.3px;
+  }
+
+  .section-body { padding: 24px 28px; }
+
+  .section-body p { font-size: 14.5px; color: var(--ink2); margin-bottom: 14px; line-height: 1.75; }
+  .section-body p:last-child { margin-bottom: 0; }
+
+  .section-body ul { list-style: none; margin: 12px 0 14px; }
+
+  .section-body ul li {
+    font-size: 14.5px; color: var(--ink2);
+    padding: 6px 0 6px 20px;
+    position: relative; line-height: 1.65;
+    border-bottom: 1px solid rgba(14,102,85,0.06);
+  }
+
+  .section-body ul li:last-child { border-bottom: none; }
+
+  .section-body ul li::before {
+    content: '✦'; position: absolute; left: 0;
+    color: var(--emerald2); font-size: 10px; top: 9px;
+  }
+
+  .section-body strong { color: var(--navy); font-weight: 600; }
+
+  .highlight-box {
+    background: var(--emerald-pale);
+    border-left: 3px solid var(--emerald);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px; margin: 16px 0;
+    font-size: 14px; color: var(--emerald);
+    font-weight: 500; line-height: 1.6;
+  }
+
+  .warning-box {
+    background: #fff8e6;
+    border-left: 3px solid #c07020;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px; margin: 16px 0;
+    font-size: 14px; color: #8a5200;
+    font-weight: 500; line-height: 1.6;
+  }
+
+  .contact-card {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    border-radius: 20px; padding: 36px;
+    text-align: center; margin-top: 48px;
+    position: relative; overflow: hidden;
+  }
+
+  .contact-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 20%, rgba(14,102,85,0.2) 0%, transparent 60%);
+  }
+
+  .contact-card-content { position: relative; z-index: 1; }
+  .contact-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .contact-sub { color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 300; margin-bottom: 20px; line-height: 1.6; }
+
+  .contact-email {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    color: white; padding: 12px 28px; border-radius: 12px;
+    font-size: 14px; font-weight: 600; text-decoration: none;
+    transition: all 0.2s; box-shadow: 0 4px 16px rgba(14,102,85,0.3);
+  }
+
+  .contact-email:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(14,102,85,0.4); }
+
+  footer { background: var(--navy); padding: 24px; text-align: center; }
+  .footer-text { color: rgba(255,255,255,0.3); font-size: 12px; line-height: 1.6; }
+  .footer-links { display: flex; justify-content: center; gap: 20px; margin-top: 8px; }
+  .footer-links a { color: rgba(255,255,255,0.4); font-size: 12px; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: #25a882; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Sa<em>vyn</em></a>
+  <a href="/" class="back-link">← Back to app</a>
+</header>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Legal</div>
+    <h1 class="hero-title">Terms of <em>Service</em></h1>
+    <p class="hero-sub">The agreement between you and Savyn when you use our app</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <p class="effective-date">Effective Date: March 24, 2026 · Last Updated: March 24, 2026</p>
+
+  <div class="intro-card">
+    <p>Please read these Terms of Service carefully before using Savyn. By creating an account or using the app, you agree to be bound by these terms. <strong>If you do not agree, please do not use Savyn.</strong> We've written these terms in plain English — no legal jargon where we can avoid it.</p>
+  </div>
+
+  <!-- 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">What Savyn Is</div>
+    </div>
+    <div class="section-body">
+      <p>Savyn is a personal finance application that connects to your financial accounts and provides personalized recommendations to help you pay off debt faster and save money more effectively.</p>
+      <div class="warning-box">
+        ⚠️ Savyn provides financial information and recommendations for educational purposes only. We are not a licensed financial advisor, bank, or investment advisor. Nothing in the app constitutes financial, legal, or investment advice. Always consult a qualified financial professional before making major financial decisions.
+      </div>
+      <p>Savyn does not move your money, initiate payments, or have direct access to your funds. All payment actions are taken by you, manually, through your own bank.</p>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">Eligibility</div>
+    </div>
+    <div class="section-body">
+      <p>To use Savyn, you must:</p>
+      <ul>
+        <li>Be at least 18 years of age</li>
+        <li>Be a resident of the United States</li>
+        <li>Have a valid bank account at a supported financial institution</li>
+        <li>Provide accurate and complete information when creating your account</li>
+        <li>Agree to these Terms and our Privacy Policy</li>
+      </ul>
+      <p>By using Savyn, you represent and warrant that you meet all of the above requirements.</p>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div class="section-title">Your Account</div>
+    </div>
+    <div class="section-body">
+      <p>When you create a Savyn account, you are responsible for:</p>
+      <ul>
+        <li>Maintaining the confidentiality of your login credentials</li>
+        <li>All activity that occurs under your account</li>
+        <li>Notifying us immediately of any unauthorized access at hello@savynapp.com</li>
+        <li>Ensuring your account information is accurate and up to date</li>
+      </ul>
+      <p>You may not share your account with others or create multiple accounts. We reserve the right to suspend or terminate accounts that violate these terms.</p>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div class="section-title">Connecting Your Financial Accounts</div>
+    </div>
+    <div class="section-body">
+      <p>Savyn uses Plaid, a third-party financial data provider, to securely connect to your bank accounts, loans, and credit cards. By connecting your accounts, you:</p>
+      <ul>
+        <li>Authorize Savyn to retrieve your account balances, transaction history, and loan information through Plaid</li>
+        <li>Agree to Plaid's End User Privacy Policy at plaid.com/legal</li>
+        <li>Acknowledge that Savyn never stores your bank login credentials</li>
+        <li>Understand you can disconnect your accounts at any time through the app or Plaid's data portal</li>
+      </ul>
+      <div class="highlight-box">
+        🔒 We use your financial data solely to generate personalized recommendations. We never sell, share, or use it for any other purpose. See our Privacy Policy for full details.
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div class="section-title">Acceptable Use</div>
+    </div>
+    <div class="section-body">
+      <p>You agree not to use Savyn to:</p>
+      <ul>
+        <li>Violate any applicable laws or regulations</li>
+        <li>Provide false or misleading information</li>
+        <li>Attempt to gain unauthorized access to our systems or other users' accounts</li>
+        <li>Reverse engineer, copy, or create derivative works of the Savyn app</li>
+        <li>Use the app for any commercial purpose without our written consent</li>
+        <li>Interfere with or disrupt the integrity or performance of the service</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div class="section-title">Disclaimer of Warranties</div>
+    </div>
+    <div class="section-body">
+      <p>Savyn is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind, either express or implied. We do not warrant that:</p>
+      <ul>
+        <li>The app will be uninterrupted, error-free, or secure at all times</li>
+        <li>The financial recommendations provided will be accurate or suitable for your situation</li>
+        <li>The data retrieved from your financial institutions will always be current or complete</li>
+        <li>The app will meet your specific financial needs or goals</li>
+      </ul>
+      <p>Your use of the app and reliance on any recommendations is entirely at your own risk.</p>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div class="section-title">Limitation of Liability</div>
+    </div>
+    <div class="section-body">
+      <p>To the maximum extent permitted by law, Savyn and its founders, employees, and partners shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
+      <ul>
+        <li>Financial losses resulting from following app recommendations</li>
+        <li>Loss of data or unauthorized access to your account</li>
+        <li>Interruption or unavailability of the service</li>
+        <li>Errors or inaccuracies in financial data retrieved from third parties</li>
+      </ul>
+      <p>Our total liability to you for any claims arising from your use of Savyn shall not exceed the amount you paid us in the 12 months preceding the claim.</p>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <div class="section-title">Subscription and Billing</div>
+    </div>
+    <div class="section-body">
+      <p>Savyn is currently free during the beta period. When we introduce paid plans:</p>
+      <ul>
+        <li>You will be notified in advance before any charges begin</li>
+        <li>Subscriptions will auto-renew unless cancelled before the renewal date</li>
+        <li>Refunds will be considered on a case-by-case basis within 7 days of billing</li>
+        <li>You can cancel your subscription at any time through your account settings</li>
+      </ul>
+      <div class="highlight-box">
+        During the current beta period, Savyn is completely free with no credit card required.
+      </div>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <div class="section-title">Intellectual Property</div>
+    </div>
+    <div class="section-body">
+      <p>All content, features, and functionality of the Savyn app — including the design, algorithms, text, graphics, and code — are owned by Savyn and protected by applicable intellectual property laws.</p>
+      <p>You may not copy, modify, distribute, or create derivative works based on our app without our explicit written permission.</p>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <div class="section-title">Termination</div>
+    </div>
+    <div class="section-body">
+      <p>You may delete your account at any time by contacting us at hello@savynapp.com. We will delete all your personal data within 30 days.</p>
+      <p>We reserve the right to suspend or terminate your account at any time if you violate these Terms, engage in fraudulent activity, or for any other reason at our sole discretion. We will provide notice where reasonably possible.</p>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <div class="section-title">Governing Law</div>
+    </div>
+    <div class="section-body">
+      <p>These Terms are governed by the laws of the State of California, United States, without regard to conflict of law principles. Any disputes arising from these Terms or your use of Savyn shall be resolved in the courts of Orange County, California.</p>
+      <p>If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full force and effect.</p>
+    </div>
+  </div>
+
+  <!-- 12 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <div class="section-title">Changes to These Terms</div>
+    </div>
+    <div class="section-body">
+      <p>We may update these Terms from time to time. When we make material changes, we will notify you via email or an in-app notification at least 14 days before the changes take effect.</p>
+      <p>Your continued use of Savyn after the effective date of updated Terms constitutes your acceptance of those changes.</p>
+    </div>
+  </div>
+
+  <div class="contact-card">
+    <div class="contact-card-content">
+      <div class="contact-title">Questions about these terms?</div>
+      <p class="contact-sub">We're a small team and we read every email. If anything here is unclear or you have concerns, reach out and we'll respond within 48 hours.</p>
+      <a href="mailto:hello@savynapp.com" class="contact-email">hello@savynapp.com</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p class="footer-text">© 2026 Savyn. All rights reserved. Huntington Beach, California.</p>
+  <div class="footer-links">
+    <a href="/">App</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+    <a href="mailto:hello@savynapp.com">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
