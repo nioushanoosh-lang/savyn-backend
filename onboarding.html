@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Savyn</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f9f7;
+    --navy: #0f2137;
+    --navy2: #1a3352;
+    --emerald: #0e6655;
+    --emerald2: #1a8a70;
+    --emerald3: #25a882;
+    --emerald-pale: #e8f5f2;
+    --ink: #0f1f12;
+    --ink2: #2c3e2e;
+    --ink3: #6b8c7a;
+    --cream: #ffffff;
+    --border: rgba(14,102,85,0.12);
+    --shadow: 0 4px 20px rgba(15,33,55,0.08);
+    --shadow-lg: 0 16px 48px rgba(15,33,55,0.16);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .onboarding {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+
+  .progress-logo em { font-style: italic; color: var(--emerald); }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald), var(--emerald3));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .progress-count {
+    font-size: 11px;
+    color: var(--ink3);
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .screen.active { display: block; }
+
+  @keyframes slideIn {
+    from { opacity:0; transform:translateY(16px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  /* WELCOME SCREEN */
+  .welcome-card {
+    background: linear-gradient(145deg, var(--navy), var(--navy2));
+    border-radius: 28px;
+    padding: 48px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .welcome-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 20%, rgba(14,102,85,0.25) 0%, transparent 60%);
+  }
+
+  .welcome-content { position: relative; z-index: 1; }
+
+  .welcome-emblem {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 24px;
+    box-shadow: 0 8px 24px rgba(14,102,85,0.35);
+  }
+
+  .welcome-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; font-weight: 800;
+    color: white; letter-spacing: -1px;
+    margin-bottom: 12px; line-height: 1.1;
+  }
+
+  .welcome-title em { font-style: italic; color: var(--emerald3); }
+
+  .welcome-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 15px; font-weight: 300;
+    line-height: 1.6; margin-bottom: 32px;
+  }
+
+  .welcome-features {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 36px; text-align: left;
+  }
+
+  .welcome-feature {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 12px 16px;
+  }
+
+  .feature-icon {
+    width: 32px; height: 32px;
+    background: rgba(37,168,130,0.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+
+  .feature-text { font-size: 13.5px; color: rgba(255,255,255,0.8); font-weight: 400; }
+  .feature-text strong { color: white; font-weight: 600; }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 32px;
+    box-shadow: var(--shadow);
+  }
+
+  .question-eyebrow {
+    font-size: 10px; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--emerald2);
+    font-weight: 600; margin-bottom: 10px;
+  }
+
+  .question-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.5px;
+    line-height: 1.3; margin-bottom: 24px;
+  }
+
+  .question-title em { font-style: italic; color: var(--emerald); }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 14px 18px;
+    cursor: pointer; transition: all 0.2s;
+    user-select: none;
+  }
+
+  .option:hover {
+    border-color: rgba(14,102,85,0.3);
+    background: var(--emerald-pale);
+  }
+
+  .option.selected {
+    border-color: var(--emerald);
+    background: var(--emerald-pale);
+  }
+
+  .option-check {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    background: white;
+  }
+
+  .option.selected .option-check {
+    background: var(--emerald);
+    border-color: var(--emerald);
+  }
+
+  .option.selected .option-check::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .option-icon { font-size: 18px; }
+
+  .option-text {
+    font-size: 14px; color: var(--ink2);
+    font-weight: 400; line-height: 1.4; flex: 1;
+  }
+
+  .option.selected .option-text { color: var(--emerald); font-weight: 500; }
+
+  /* BUTTONS */
+  .btn-next {
+    width: 100%; margin-top: 20px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    color: white; border: none; border-radius: 14px;
+    padding: 16px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'Jost', sans-serif;
+    letter-spacing: 0.3px; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(14,102,85,0.3);
+    opacity: 0.4; pointer-events: none;
+  }
+
+  .btn-next.ready {
+    opacity: 1; pointer-events: all;
+  }
+
+  .btn-next.ready:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(14,102,85,0.4);
+  }
+
+  .btn-start {
+    width: 100%;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    color: white; border: none; border-radius: 14px;
+    padding: 16px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'Jost', sans-serif;
+    letter-spacing: 0.3px; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(14,102,85,0.3);
+  }
+
+  .btn-start:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(14,102,85,0.4);
+  }
+
+  .skip-link {
+    text-align: center; margin-top: 14px;
+    font-size: 12px; color: var(--ink3);
+    cursor: pointer; transition: color 0.2s;
+  }
+
+  .skip-link:hover { color: var(--emerald); }
+
+  /* COMPLETION */
+  .completion-card {
+    background: linear-gradient(145deg, var(--navy), var(--navy2));
+    border-radius: 28px; padding: 48px 36px;
+    text-align: center; position: relative;
+    overflow: hidden; box-shadow: var(--shadow-lg);
+  }
+
+  .completion-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 80%, rgba(14,102,85,0.2) 0%, transparent 60%);
+  }
+
+  .completion-content { position: relative; z-index: 1; }
+
+  .completion-emblem {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin: 0 auto 24px;
+    box-shadow: 0 8px 28px rgba(14,102,85,0.4);
+    animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .completion-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 800;
+    color: white; letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+
+  .completion-title em { font-style: italic; color: var(--emerald3); }
+
+  .completion-sub {
+    color: rgba(255,255,255,0.55);
+    font-size: 14px; font-weight: 300;
+    line-height: 1.65; margin-bottom: 32px;
+  }
+
+  .summary-pills {
+    display: flex; flex-wrap: wrap;
+    gap: 8px; justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .summary-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+    font-size: 12px; padding: 6px 14px;
+    border-radius: 20px; font-family: 'Jost', sans-serif;
+    font-weight: 500;
+  }
+
+  .btn-launch {
+    width: 100%;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    color: white; border: none; border-radius: 14px;
+    padding: 16px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'Jost', sans-serif;
+    letter-spacing: 0.3px; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(14,102,85,0.35);
+  }
+
+  .btn-launch:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(14,102,85,0.45); }
+</style>
+</head>
+<body>
+
+<div class="onboarding">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-logo">Sa<em>vyn</em></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-count" id="progressCount">1 of 5</div>
+  </div>
+
+  <!-- SCREEN 0: WELCOME -->
+  <div class="screen active" id="screen-0">
+    <div class="welcome-card">
+      <div class="welcome-content">
+        <div class="welcome-emblem">💚</div>
+        <h1 class="welcome-title">Welcome to <em>Savyn</em></h1>
+        <p class="welcome-sub">Your personal financial advisor — helping you pay off debt faster and save money automatically.</p>
+        <div class="welcome-features">
+          <div class="welcome-feature">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text"><strong>Daily recommendations</strong> — exactly how much extra to pay on your loans</div>
+          </div>
+          <div class="welcome-feature">
+            <div class="feature-icon">💰</div>
+            <div class="feature-text"><strong>Round-up savings</strong> — spare change saved automatically on every purchase</div>
+          </div>
+          <div class="welcome-feature">
+            <div class="feature-icon">🤖</div>
+            <div class="feature-text"><strong>AI advisor</strong> — ask anything about your debt and savings</div>
+          </div>
+        </div>
+        <button class="btn-start" onclick="startOnboarding()">Get Started — It's Free</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: GOAL -->
+  <div class="screen" id="screen-1">
+    <div class="question-card">
+      <div class="question-eyebrow">Question 1 of 5</div>
+      <div class="question-title">What's your biggest <em>financial goal</em> right now?</div>
+      <div class="options" id="options-1">
+        <div class="option" onclick="selectOption(1, this, 'Pay off credit card debt')">
+          <div class="option-check"></div>
+          <div class="option-icon">💳</div>
+          <div class="option-text">Pay off credit card debt</div>
+        </div>
+        <div class="option" onclick="selectOption(1, this, 'Pay off student loans')">
+          <div class="option-check"></div>
+          <div class="option-icon">🎓</div>
+          <div class="option-text">Pay off student loans</div>
+        </div>
+        <div class="option" onclick="selectOption(1, this, 'Pay off car loan')">
+          <div class="option-check"></div>
+          <div class="option-icon">🚗</div>
+          <div class="option-text">Pay off car loan</div>
+        </div>
+        <div class="option" onclick="selectOption(1, this, 'Build my savings')">
+          <div class="option-check"></div>
+          <div class="option-icon">🪣</div>
+          <div class="option-text">Build my savings</div>
+        </div>
+        <div class="option" onclick="selectOption(1, this, 'All of the above')">
+          <div class="option-check"></div>
+          <div class="option-icon">✨</div>
+          <div class="option-text">All of the above</div>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-1" onclick="nextScreen(2)">Continue →</button>
+      <div class="skip-link" onclick="nextScreen(2)">Skip this question</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: DEBT AMOUNT -->
+  <div class="screen" id="screen-2">
+    <div class="question-card">
+      <div class="question-eyebrow">Question 2 of 5</div>
+      <div class="question-title">How much <em>total debt</em> do you currently have?</div>
+      <div class="options" id="options-2">
+        <div class="option" onclick="selectOption(2, this, 'Under $10,000')">
+          <div class="option-check"></div>
+          <div class="option-icon">🌱</div>
+          <div class="option-text">Under $10,000</div>
+        </div>
+        <div class="option" onclick="selectOption(2, this, '$10,000 - $30,000')">
+          <div class="option-check"></div>
+          <div class="option-icon">📈</div>
+          <div class="option-text">$10,000 — $30,000</div>
+        </div>
+        <div class="option" onclick="selectOption(2, this, '$30,000 - $60,000')">
+          <div class="option-check"></div>
+          <div class="option-icon">💼</div>
+          <div class="option-text">$30,000 — $60,000</div>
+        </div>
+        <div class="option" onclick="selectOption(2, this, 'Over $60,000')">
+          <div class="option-check"></div>
+          <div class="option-icon">🏔️</div>
+          <div class="option-text">Over $60,000</div>
+        </div>
+        <div class="option" onclick="selectOption(2, this, 'Prefer not to say')">
+          <div class="option-check"></div>
+          <div class="option-icon">🔒</div>
+          <div class="option-text">Prefer not to say</div>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-2" onclick="nextScreen(3)">Continue →</button>
+      <div class="skip-link" onclick="nextScreen(3)">Skip this question</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: PREVIOUS APPS -->
+  <div class="screen" id="screen-3">
+    <div class="question-card">
+      <div class="question-eyebrow">Question 3 of 5</div>
+      <div class="question-title">Have you tried a <em>finance app</em> before?</div>
+      <div class="options" id="options-3">
+        <div class="option" onclick="selectOption(3, this, 'Yes — tried one but it didn\'t stick')">
+          <div class="option-check"></div>
+          <div class="option-icon">😤</div>
+          <div class="option-text">Yes — tried one but it didn't stick</div>
+        </div>
+        <div class="option" onclick="selectOption(3, this, 'Yes — I still use one')">
+          <div class="option-check"></div>
+          <div class="option-icon">📱</div>
+          <div class="option-text">Yes — I still use one</div>
+        </div>
+        <div class="option" onclick="selectOption(3, this, 'No — never found one I liked')">
+          <div class="option-check"></div>
+          <div class="option-icon">🔍</div>
+          <div class="option-text">No — never found one I liked</div>
+        </div>
+        <div class="option" onclick="selectOption(3, this, 'No — first time trying')">
+          <div class="option-check"></div>
+          <div class="option-icon">🌟</div>
+          <div class="option-text">No — this is my first time trying</div>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-3" onclick="nextScreen(4)">Continue →</button>
+      <div class="skip-link" onclick="nextScreen(4)">Skip this question</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: MOTIVATION -->
+  <div class="screen" id="screen-4">
+    <div class="question-card">
+      <div class="question-eyebrow">Question 4 of 5</div>
+      <div class="question-title">What would make you <em>open Savyn</em> every day?</div>
+      <div class="options" id="options-4">
+        <div class="option" onclick="selectOption(4, this, 'Daily notification telling me exactly what to pay')">
+          <div class="option-check"></div>
+          <div class="option-icon">🔔</div>
+          <div class="option-text">A daily notification telling me exactly what to pay</div>
+        </div>
+        <div class="option" onclick="selectOption(4, this, 'Seeing my debt go down in real time')">
+          <div class="option-check"></div>
+          <div class="option-icon">📉</div>
+          <div class="option-text">Seeing my debt go down in real time</div>
+        </div>
+        <div class="option" onclick="selectOption(4, this, 'Knowing exactly how much interest I\'m saving')">
+          <div class="option-check"></div>
+          <div class="option-icon">💸</div>
+          <div class="option-text">Knowing exactly how much interest I'm saving</div>
+        </div>
+        <div class="option" onclick="selectOption(4, this, 'Watching my savings grow automatically')">
+          <div class="option-check"></div>
+          <div class="option-icon">🌱</div>
+          <div class="option-text">Watching my savings grow automatically</div>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-4" onclick="nextScreen(5)">Continue →</button>
+      <div class="skip-link" onclick="nextScreen(5)">Skip this question</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: HOW DID YOU HEAR -->
+  <div class="screen" id="screen-5">
+    <div class="question-card">
+      <div class="question-eyebrow">Question 5 of 5</div>
+      <div class="question-title">How did you hear about <em>Savyn?</em></div>
+      <div class="options" id="options-5">
+        <div class="option" onclick="selectOption(5, this, 'Friend or family')">
+          <div class="option-check"></div>
+          <div class="option-icon">👥</div>
+          <div class="option-text">Friend or family</div>
+        </div>
+        <div class="option" onclick="selectOption(5, this, 'Instagram or TikTok')">
+          <div class="option-check"></div>
+          <div class="option-icon">📲</div>
+          <div class="option-text">Instagram or TikTok</div>
+        </div>
+        <div class="option" onclick="selectOption(5, this, 'Twitter / X')">
+          <div class="option-check"></div>
+          <div class="option-icon">🐦</div>
+          <div class="option-text">Twitter / X</div>
+        </div>
+        <div class="option" onclick="selectOption(5, this, 'Google search')">
+          <div class="option-check"></div>
+          <div class="option-icon">🔍</div>
+          <div class="option-text">Google search</div>
+        </div>
+        <div class="option" onclick="selectOption(5, this, 'Other')">
+          <div class="option-check"></div>
+          <div class="option-icon">✨</div>
+          <div class="option-text">Other</div>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-5" onclick="finishOnboarding()">See My Dashboard →</button>
+      <div class="skip-link" onclick="finishOnboarding()">Skip this question</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: COMPLETION -->
+  <div class="screen" id="screen-6">
+    <div class="completion-card">
+      <div class="completion-content">
+        <div class="completion-emblem">✓</div>
+        <h2 class="completion-title">You're all <em>set!</em></h2>
+        <p class="completion-sub">Savyn is ready to help you save money and pay off debt faster. Connect your bank to get your first personalized recommendation.</p>
+        <div class="summary-pills" id="summaryPills"></div>
+        <button class="btn-launch" onclick="goToApp()">Go to My Dashboard 💚</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const answers = {};
+const totalQuestions = 5;
+
+function startOnboarding() {
+  document.getElementById('progressWrap').style.display = 'flex';
+  showScreen(1);
+  updateProgress(1);
+}
+
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+}
+
+function updateProgress(current) {
+  const pct = ((current - 1) / totalQuestions) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = current + ' of ' + totalQuestions;
+}
+
+function selectOption(questionNum, el, value) {
+  document.querySelectorAll('#options-' + questionNum + ' .option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  answers['q' + questionNum] = value;
+  const btn = document.getElementById('btn-' + questionNum);
+  if(btn) { btn.classList.add('ready'); }
+}
+
+function nextScreen(n) {
+  showScreen(n);
+  updateProgress(n);
+}
+
+function finishOnboarding() {
+  // Build summary pills
+  const pillContainer = document.getElementById('summaryPills');
+  pillContainer.innerHTML = '';
+  Object.values(answers).forEach(val => {
+    if(val) {
+      const pill = document.createElement('div');
+      pill.className = 'summary-pill';
+      pill.textContent = val;
+      pillContainer.appendChild(pill);
+    }
+  });
+
+  // Save to localStorage so we don't show onboarding again
+  localStorage.setItem('savyn_onboarded', 'true');
+  localStorage.setItem('savyn_answers', JSON.stringify(answers));
+
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen(6);
+}
+
+function goToApp() {
+  window.location.href = '/';
+}
+
+// Check if already onboarded
+if(localStorage.getItem('savyn_onboarded') === 'true') {
+  window.location.href = '/';
+}
+</script>
+</body>
+</html>
