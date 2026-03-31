@@ -335,6 +335,39 @@ function addMsg(text,role){
 <script>
 const BACKEND = 'https://savyn-backend-production.up.railway.app';
 
+// Handle OAuth redirect return
+async function initializePlaid() {
+  const isOAuthRedirect = window.location.href.includes('?oauth_state_id=');
+  if (isOAuthRedirect) {
+    const savedToken = localStorage.getItem('savyn_link_token');
+    if (savedToken) {
+      localStorage.setItem('savyn_link_token', data.link_token);
+    const handler = Plaid.create({
+        token: savedToken,
+        receivedRedirectUri: window.location.href,
+        onSuccess: async (public_token) => {
+          localStorage.removeItem('savyn_link_token');
+          await fetch(BACKEND + '/api/exchange-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ public_token })
+          });
+          loadPlaidData();
+          document.getElementById('plaidStatus').textContent = '✓ Bank connected!';
+        },
+        onExit: (err) => { console.log('Plaid exit', err); }
+      });
+      handler.open();
+    }
+  }
+}
+
+// Run on page load
+window.addEventListener('load', function() {
+  initializePlaid();
+  loadPlaidData();
+});
+
 async function openPlaidLink() {
   try {
     const res = await fetch(BACKEND + '/api/create-link-token', {
@@ -342,8 +375,10 @@ async function openPlaidLink() {
       headers: { 'Content-Type': 'application/json' }
     });
     const data = await res.json();
+    localStorage.setItem('savyn_link_token', data.link_token);
     const handler = Plaid.create({
       token: data.link_token,
+      receivedRedirectUri: window.location.href.includes('?oauth_state_id=') ? window.location.href : undefined,
       onSuccess: async (public_token) => {
         await fetch(BACKEND + '/api/exchange-token', {
           method: 'POST',
@@ -386,4 +421,4 @@ async function loadPlaidData() {
   } catch(err) { console.log('Could not load data', err); }
 }
 </script>
-<script>window.addEventListener('load', function(){ loadPlaidData(); });</script>
+
