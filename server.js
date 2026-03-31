@@ -30,6 +30,7 @@ app.post('/api/create-link-token', async (req, res) => {
       products: ['transactions', 'liabilities'],
       country_codes: ['US'],
       language: 'en',
+      redirect_uri: 'https://www.savynapp.com/Savyn.html',
     });
     res.json({ link_token: response.data.link_token });
   } catch (err) {
