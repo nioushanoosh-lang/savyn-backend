@@ -1,4 +1,50 @@
 require('dotenv').config();
+
+// ── DATABASE CONNECTION ──
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+// Create tables on startup
+async function initDB() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE,
+        plaid_access_token TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+      
+      CREATE TABLE IF NOT EXISTS user_bills (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) UNIQUE NOT NULL,
+        cc_monthly DECIMAL(10,2) DEFAULT 0,
+        quarterly_annual_monthly DECIMAL(10,2) DEFAULT 0,
+        seasonal_monthly DECIMAL(10,2) DEFAULT 0,
+        aggressiveness VARCHAR(20) DEFAULT 'moderate',
+        irregular_expenses JSON DEFAULT '[]',
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+      
+      CREATE TABLE IF NOT EXISTS transfer_history (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        status VARCHAR(50) DEFAULT 'success',
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    console.log('Database tables ready');
+  } catch (err) {
+    console.error('DB init error:', err.message);
+  }
+}
+initDB();
+
+
 const express = require('express');
 const cors = require('cors');
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
