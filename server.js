@@ -153,7 +153,7 @@ app.post('/api/auth/signup', async (req, res) => {
     const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ success: true, token, email: user.email, userId: user.id });
   } catch (err) {
-    console.error('Signup error:', err.message);
+    console.error('Signup error FULL:', err);
     res.status(500).json({ error: 'Failed to create account.' });
   }
 });
