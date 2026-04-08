@@ -1,127 +1,128 @@
-TextDecoderStream.html
-<!DOCTYPE html>
-<html>
-<head>
-  <title>FinAdvisor — Plaid Test</title>
-  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
-  <style>
-    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f5f0e8; }
-    h1 { font-size: 24px; margin-bottom: 8px; }
-    p { color: #7a6e5f; margin-bottom: 32px; }
-    button { background: #1a1209; color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; cursor: pointer; }
-    button:hover { background: #c8341a; }
-    #status { margin-top: 24px; color: #1a6b45; font-size: 14px; }
-  </style>
-</head>
-<body>
-  <h1>FinAdvisor Plaid Test</h1>
-  <p>Connect a fake Sandbox bank account to test the integration</p>
-  <button onclick="connectBank()">Connect Bank Account</button>
-  <div id="status"></div>
+require('dotenv').config();
 
-<script>
-async function connectBank() {
-  const status = document.getElementById('status');
-  status.textContent = 'Getting link token...';
+// ── DATABASE CONNECTION ──
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
-  // Step 1 - get link token from your backend
-  const res = await fetch('http://localhost:3000/api/create-link-token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
-  });
-
-  const data = await res.json();
-  const linkToken = data.link_token;
-  status.textContent = 'Opening Plaid...';
-
-  // Step 2 - open Plaid Link window
-  const handler = Plaid.create({
-    token: linkToken,
-    onSuccess: async (public_token, metadata) => {
-      status.textContent = 'Exchanging token...';
-
-      // Step 3 - exchange public token for access token
-      await fetch('http://localhost:3000/api/exchange-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ public_token })
-      });
-
-      status.textContent = '✅ Bank connected! Fetching balances...';
-
-      // Step 4 - get balances
-      const balRes = await fetch('http://localhost:3000/api/balances');
-      const balData = await balRes.json();
-      console.log('BALANCES:', balData);
-
-      status.textContent = '✅ Success! Check the browser console for your account data (Command + Option + J)';
-    },
-    onExit: (err) => {
-      if (err) status.textContent = 'Error: ' + err.message;
-      else status.textContent = 'Cancelled.';
-    }
-  });
-
-  handler.open();
+// Create tables on startup
+async function initDB() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE,
+        plaid_access_token TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+      
+      CREATE TABLE IF NOT EXISTS user_bills (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) UNIQUE NOT NULL,
+        cc_monthly DECIMAL(10,2) DEFAULT 0,
+        quarterly_annual_monthly DECIMAL(10,2) DEFAULT 0,
+        seasonal_monthly DECIMAL(10,2) DEFAULT 0,
+        aggressiveness VARCHAR(20) DEFAULT 'moderate',
+        irregular_expenses JSON DEFAULT '[]',
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+      
+      CREATE TABLE IF NOT EXISTS transfer_history (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        status VARCHAR(50) DEFAULT 'success',
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    console.log('Database tables ready');
+  } catch (err) {
+    console.error('DB init error:', err.message);
+  }
 }
-</script>
-</body>
-</html>
-```
-<!DOCTYPE html>
-<html>
-<head>
-  <title>FinAdvisor — Plaid Test</title>
-  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
-  <style>
-    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f5f0e8; }
-    h1 { font-size: 24px; margin-bottom: 8px; }
-    p { color: #7a6e5f; margin-bottom: 32px; }
-    button { background: #1a1209; color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; cursor: pointer; }
-    button:hover { background: #c8341a; }
-    #status { margin-top: 24px; color: #1a6b45; font-size: 14px; }
-  </style>
-</head>
-<body>
-  <h1>FinAdvisor Plaid Test</h1>
-  <p>Connect a fake Sandbox bank account to test the integration</p>
-  <button onclick="connectBank()">Connect Bank Account</button>
-  <div id="status"></div>
+initDB();
 
-<script>
-async function connectBank() {
-  const status = document.getElementById('status');
-  status.textContent = 'Getting link token...';
 
-  // Step 1 - get link token from your backend
-  const res = await fetch('http://localhost:3000/api/create-link-token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
-  });
+const express = require('express');
+const cors = require('cors');
+const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 
-  const data = await res.json();
-  const linkToken = data.link_token;
-  status.textContent = 'Opening Plaid...';
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-  // Step 2 - open Plaid Link window
-  const handler = Plaid.create({
-    token: linkToken,
-    onSuccess: async (public_token, metadata) => {
-      status.textContent = 'Exchanging token...';
+const config = new Configuration({
+  basePath: PlaidEnvironments[process.env.PLAID_ENV || 'sandbox'],
+  baseOptions: {
+    headers: {
+      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+      'PLAID-SECRET': process.env.PLAID_SANDBOX_SECRET,
+    },
+  },
+});
 
-      // Step 3 - exchange public token for access token
-      await fetch('http://localhost:3000/api/exchange-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ public_token })
-      });
+const plaidClient = new PlaidApi(config);
+let accessTokens = {};
 
-      status.textContent = '✅ Bank connected! Fetching balances...';
+app.get('/', (req, res) => res.json({ status: 'Savyn backend running' }));
 
-      // Step 4 - get balances
-      const balRes = await fetch('http://localhost:3000/api/balances');
-      const balData = await balRes.json();
-      console.log('BALANCES:', balData);
+app.post('/api/create-link-token', async (req, res) => {
+  try {
+    const response = await plaidClient.linkTokenCreate({
+      user: { client_user_id: 'test-user-001' },
+      client_name: 'Savyn',
+      products: ['transactions', 'liabilities'],
+      country_codes: ['US'],
+      language: 'en',
+      redirect_uri: 'https://www.savynapp.com/Savyn.html',
+    });
+    res.json({ link_token: response.data.link_token });
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to create link token' });
+  }
+});
+
+app.post('/api/exchange-token', async (req, res) => {
+  try {
+    const { public_token } = req.body;
+    const response = await plaidClient.itemPublicTokenExchange({ public_token });
+    accessTokens['test-user-001'] = response.data.access_token;
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to exchange token' });
+  }
+});
+
+app.get('/api/balances', async (req, res) => {
+  try {
+    const accessToken = accessTokens['test-user-001'];
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+    const response = await plaidClient.accountsBalanceGet({ access_token: accessToken });
+    res.json(response.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to get balances' });
+  }
+});
+
+app.get('/api/liabilities', async (req, res) => {
+  try {
+    const accessToken = accessTokens['test-user-001'];
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+    const response = await plaidClient.liabilitiesGet({ access_token: accessToken });
+    res.json(response.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to get liabilities' });
+  }
+});
+
+
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'savyn-secret-key';
@@ -162,7 +163,7 @@ app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required.' });
     const result = await pool.query('SELECT id, email, password_hash FROM users WHERE email = $1', [email.toLowerCase()]);
-    if (result.rows.length === 0) return res.status(400).json({ error: 'No account found with this email.' });
+    if (result.rows.length === 0) return res.status(400).json({ error: 'No account found.' });
     const user = result.rows[0];
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(400).json({ error: 'Incorrect password.' });
@@ -184,23 +185,54 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
   }
 });
 
-      status.textContent = '✅ Success! Check the browser console for your account data (Command + Option + J)';
-    },
-    onExit: (err) => {
-      if (err) status.textContent = 'Error: ' + err.message;
-      else status.textContent = 'Cancelled.';
+
+app.get('/api/optimize', async (req, res) => {
+  try {
+    const accessToken = accessTokens['test-user-001'];
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+    const [balRes, txRes, liabRes] = await Promise.all([
+      plaidClient.accountsBalanceGet({ access_token: accessToken }),
+      plaidClient.transactionsGet({ access_token: accessToken, start_date: '2024-01-01', end_date: '2025-12-31' }),
+      plaidClient.liabilitiesGet({ access_token: accessToken }),
+    ]);
+    const accounts = balRes.data.accounts;
+    const transactions = txRes.data.transactions;
+    const liabilities = liabRes.data.liabilities;
+    const checking = accounts.find(a => a.subtype === 'checking');
+    const checkingBalance = checking ? checking.balances.available : 0;
+    const totalSpend = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+    const avgWeeklySpend = totalSpend / Math.max(1, transactions.length / 7);
+    const safetyBuffer = avgWeeklySpend * 2;
+    const disposable = Math.max(0, checkingBalance - safetyBuffer);
+    const creditCards = liabilities.credit || [];
+    const studentLoans = liabilities.student || [];
+    let allLoans = [
+      ...creditCards.map(c => ({ name: c.name || 'Credit Card', balance: c.last_statement_balance || 0, apr: c.aprs && c.aprs[0] ? c.aprs[0].apr_percentage : 0, minPayment: c.minimum_payment_amount || 0, type: 'credit' })),
+      ...studentLoans.map(l => ({ name: l.loan_name || 'Student Loan', balance: l.outstanding_principal_amount || 0, apr: l.interest_rate_percentage || 0, minPayment: l.minimum_payment_amount || 0, type: 'student' }))
+    ];
+    allLoans.sort((a, b) => b.apr - a.apr);
+    const topLoan = allLoans[0];
+    if (!topLoan || disposable < 50) {
+      return res.json({ recommendation: null, message: 'Not enough disposable income right now.', disposable: Math.round(disposable), loans: allLoans });
     }
-  });
+    const extraPayment = Math.min(Math.round(disposable * 0.6), Math.round(topLoan.balance));
+    const monthlyRate = topLoan.apr / 100 / 12;
+    const currentMonths = monthlyRate > 0 ? Math.log(topLoan.minPayment / (topLoan.minPayment - topLoan.balance * monthlyRate)) / Math.log(1 + monthlyRate) : topLoan.balance / (topLoan.minPayment || 1);
+    const newBalance = topLoan.balance - extraPayment;
+    const newMonths = monthlyRate > 0 ? Math.log(topLoan.minPayment / (topLoan.minPayment - newBalance * monthlyRate)) / Math.log(1 + monthlyRate) : newBalance / (topLoan.minPayment || 1);
+    const monthsSaved = Math.max(0, Math.round(currentMonths - newMonths));
+    const interestSaved = Math.round(monthsSaved * topLoan.minPayment * (topLoan.apr / 100 / 12));
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + Math.round(newMonths));
+    const payoffStr = payoffDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+    res.json({ recommendation: { loanName: topLoan.name, apr: topLoan.apr, extraPayment, interestSaved: Math.max(0, interestSaved), monthsSaved, newPayoffDate: payoffStr, currentBalance: Math.round(topLoan.balance) }, disposable: Math.round(disposable), checkingBalance: Math.round(checkingBalance), safetyBuffer: Math.round(safetyBuffer), loans: allLoans, message: 'Pay $' + extraPayment + ' extra on your ' + topLoan.name + ' today. You will save $' + Math.max(0, interestSaved) + ' in interest and finish ' + monthsSaved + ' months early.' });
+  } catch (err) {
+    console.error(err.response ? err.response.data : err.message);
+    res.status(500).json({ error: 'Optimizer failed: ' + err.message });
+  }
+});
 
-  handler.open();
-}
-</script>
-</body>
-</html>
-```
-
-Save with **Command + S**.
-
-Then open this file in your browser — in Terminal tab 2 type:
-```
-open test.html
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Savyn backend running on port ${PORT}`);
+});
