@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savyn — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --navy: #0f2137;
+    --emerald: #0e6655;
+    --emerald2: #1a8a70;
+    --emerald3: #25a882;
+    --ink: #0f1f12;
+    --gray: #6b8c7a;
+    --border: rgba(14,102,85,0.15);
+    --error: #e53935;
+  }
+
+  body {
+    background: var(--navy);
+    font-family: 'Jost', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background blobs */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14,102,85,0.12) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,168,130,0.06) 0%, transparent 70%);
+    bottom: -80px; left: -80px;
+    pointer-events: none;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(24px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  /* Logo */
+  .logo {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .logo-mark {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 24px rgba(14,102,85,0.35);
+  }
+
+  .logo-mark svg { width: 28px; height: 28px; }
+
+  .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-name em { font-style: italic; color: var(--emerald3); }
+
+  /* Tab switcher */
+  .tabs {
+    display: flex;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 28px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    border-radius: 9px;
+    transition: all 0.2s;
+    font-family: 'Jost', sans-serif;
+    border: none;
+    background: none;
+  }
+
+  .tab.active {
+    background: var(--emerald);
+    color: white;
+    box-shadow: 0 2px 8px rgba(14,102,85,0.4);
+  }
+
+  /* Form */
+  .form { display: flex; flex-direction: column; gap: 14px; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .field input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    color: white;
+    outline: none;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .field input::placeholder { color: rgba(255,255,255,0.2); }
+
+  .field input:focus {
+    border-color: var(--emerald3);
+    background: rgba(255,255,255,0.07);
+    box-shadow: 0 0 0 3px rgba(37,168,130,0.12);
+  }
+
+  .field input.error { border-color: var(--error); }
+
+  /* Error message */
+  .error-msg {
+    font-size: 12px;
+    color: #ff6b6b;
+    text-align: center;
+    min-height: 18px;
+    font-weight: 400;
+  }
+
+  /* Submit button */
+  .btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Jost', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(14,102,85,0.35);
+    margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(14,102,85,0.45); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .btn-loader {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn.loading .btn-text { display: none; }
+  .btn.loading .btn-loader { display: block; }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+  }
+
+  .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+  .divider-text { font-size: 11px; color: rgba(255,255,255,0.2); font-weight: 500; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    line-height: 1.7;
+  }
+
+  .footer a { color: var(--emerald3); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Success state */
+  .success-screen {
+    display: none;
+    text-align: center;
+    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .success-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+    box-shadow: 0 8px 28px rgba(14,102,85,0.4);
+    animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity:0; }
+    to { transform: scale(1); opacity:1; }
+  }
+
+  .success-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .success-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="14" cy="15" rx="9" ry="7.5" fill="white" opacity="0.9"/>
+        <text x="14" y="19" font-family="Georgia,serif" font-size="9" font-weight="700" fill="#0e6655" text-anchor="middle">$</text>
+        <ellipse cx="22" cy="14" rx="3" ry="2.2" fill="white" opacity="0.7"/>
+        <circle cx="19" cy="11" r="1.5" fill="white"/>
+        <rect x="10" y="7" width="8" height="2" rx="1" fill="white" opacity="0.8"/>
+        <rect x="6" y="21" width="3.5" height="5" rx="1.75" fill="white" opacity="0.8"/>
+        <rect x="11" y="22" width="3.5" height="4" rx="1.75" fill="white" opacity="0.8"/>
+        <rect x="16" y="22" width="3.5" height="4" rx="1.75" fill="white" opacity="0.8"/>
+        <rect x="21" y="21" width="3.5" height="5" rx="1.75" fill="white" opacity="0.8"/>
+      </svg>
+    </div>
+    <div class="logo-name">Sa<em>vyn</em></div>
+  </div>
+
+  <!-- Main form area -->
+  <div id="mainForm">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="loginTab" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" id="signupTab" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- Form -->
+    <div class="form">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" autocapitalize="none"/>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+
+      <div id="confirmField" class="field" style="display:none;">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="new-password"/>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button class="btn" id="submitBtn" onclick="handleSubmit()">
+        <span class="btn-text" id="btnText">Sign In</span>
+        <div class="btn-loader"></div>
+      </button>
+    </div>
+
+    <div class="footer">
+      By continuing you agree to Savyn's
+      <a href="/terms.html" target="_blank">Terms of Service</a> and
+      <a href="/privacy.html" target="_blank">Privacy Policy</a>
+    </div>
+
+  </div>
+
+  <!-- Success screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <div class="success-title" id="successTitle">Welcome back!</div>
+    <p class="success-sub" id="successSub">Taking you to your dashboard...</p>
+  </div>
+
+</div>
+
+<script>
+const BACKEND = 'https://savyn-backend-production.up.railway.app';
+let currentTab = 'login';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+  document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
+  document.getElementById('confirmField').style.display = tab === 'signup' ? 'flex' : 'none';
+  document.getElementById('btnText').textContent = tab === 'login' ? 'Sign In' : 'Create Account';
+  document.getElementById('errorMsg').textContent = '';
+}
+
+function setLoading(loading) {
+  const btn = document.getElementById('submitBtn');
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+}
+
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+}
+
+async function handleSubmit() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) return showError('Please fill in all fields.');
+  if (!email.includes('@')) return showError('Please enter a valid email address.');
+  if (password.length < 8) return showError('Password must be at least 8 characters.');
+
+  if (currentTab === 'signup') {
+    const confirm = document.getElementById('confirmPassword').value;
+    if (password !== confirm) return showError('Passwords do not match.');
+  }
+
+  setLoading(true);
+  showError('');
+
+  try {
+    const endpoint = currentTab === 'login' ? '/api/auth/login' : '/api/auth/signup';
+    const res = await fetch(BACKEND + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      showError(data.error || 'Something went wrong. Please try again.');
+      setLoading(false);
+      return;
+    }
+
+    // Save token and user info
+    localStorage.setItem('savyn_token', data.token);
+    localStorage.setItem('savyn_email', data.email);
+    localStorage.setItem('savyn_user_id', data.userId);
+
+    // Show success
+    document.getElementById('mainForm').style.display = 'none';
+    const successScreen = document.getElementById('successScreen');
+    successScreen.style.display = 'block';
+    document.getElementById('successTitle').textContent = currentTab === 'login' ? 'Welcome back!' : 'Account created!';
+    document.getElementById('successSub').textContent = 'Taking you to your dashboard...';
+
+    // Redirect to app
+    setTimeout(() => {
+      window.location.href = '/Savyn.html';
+    }, 1500);
+
+  } catch (err) {
+    showError('Connection error. Please check your internet and try again.');
+    setLoading(false);
+  }
+}
+
+// Allow Enter key to submit
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleSubmit();
+});
+
+// Check if already logged in
+if (localStorage.getItem('savyn_token')) {
+  window.location.href = '/Savyn.html';
+}
+</script>
+
+</body>
+</html>
