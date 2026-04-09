@@ -517,4 +517,57 @@ async function loadPlaidData() {
     const optData = await optRes.json();
     if (balData.accounts) {
       let total = 0;
-      balData.accounts.forEach(a => { if (a.t</script></body></html>
+      balData.accounts.forEach(a => { if (a.type === 'depository') total += a.balances.current || 0; });
+      document.getElementById('netWorth').textContent = '$' + total.toLocaleString();
+    }
+  } catch(err) { console.log('Could not load data:', err); }
+}
+window.addEventListener('load', loadPlaidData);
+function confirmPayment() {
+  const btn = document.getElementById('recBtn');
+  btn.textContent = 'Awesome!';
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = 'Got it'; btn.disabled = false; }, 3000);
+}
+const chatHistory = [];
+function sendQuickPrompt(el) { document.getElementById('chatInput').value = el.textContent; sendChat(); }
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+  addMessage('user', message);
+  const typingEl = showTyping();
+  try {
+    const res = await fetch(BACKEND + '/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + savynToken }, body: JSON.stringify({ message, history: chatHistory }) });
+    const data = await res.json();
+    typingEl.remove();
+    addMessage('ai', data.reply || 'I am here to help!');
+  } catch(err) { typingEl.remove(); addMessage('ai', 'Try again in a moment!'); }
+}
+function addMessage(role, text) {
+  const chatArea = document.getElementById('chatArea');
+  const msg = document.createElement('div');
+  msg.className = 'msg ' + role;
+  msg.innerHTML = '<div class="msg-avatar ' + role + '">' + (role === 'ai' ? '💚' : '👤') + '</div><div class="msg-bubble">' + text + '</div>';
+  chatArea.appendChild(msg);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+function showTyping() {
+  const chatArea = document.getElementById('chatArea');
+  const el = document.createElement('div');
+  el.className = 'msg ai';
+  el.innerHTML = '<div class="msg-avatar ai">💚</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  chatArea.appendChild(el);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return el;
+}
+document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+function addGoal() { alert('Goal creation coming soon!'); }
+function showBillsModal() { alert('Bill tracking coming soon!'); }
+function showAggressivenessModal() {
+  const labels = { '1': 'Conservative', '2': 'Moderate', '3': 'Aggressive' };
+  const choice = prompt('1. Conservative\n2. Moderate\n3. Aggressive\nEnter 1, 2, or 3:');
+  if (labels[choice]) { document.getElementById('aggressivenessDisplay').textContent = labels[choice]; }
+}
+</script></body></html>
