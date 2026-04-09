@@ -302,13 +302,13 @@
     <div class="nav-item" onclick="switchTab(this)"><span class="nav-icon">📉</span><span class="nav-label">Loans</span></div>
     <div class="nav-item" onclick="switchTab(this)"><span class="nav-icon">🌿</span><span class="nav-label">Savyn</span></div>
     <div class="nav-item" onclick="switchTab(this)"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></div>
-    <div class="nav-item" onclick="switchTab(this)"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+    <div class="nav-item" onclick="switchTab(this,'profile')"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
   </nav>
 </div>
 <script>
 function confirmPayment(){document.getElementById('confirmedOverlay').classList.add('show');}
 function snoozeRec(){const c=document.querySelector('.rec-card');Object.assign(c.style,{opacity:'0.45',transform:'scale(0.98)',transition:'all 0.3s'});setTimeout(()=>Object.assign(c.style,{opacity:'1',transform:'scale(1)'}),2000);}
-function switchTab(el){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');}
+function switchTab(el,tab){document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));el.classList.add("active");var sc=document.querySelector(".scroll-content");var ps=document.getElementById("profileSection");if(tab==="profile"){if(sc)sc.style.display="none";if(ps)ps.style.display="block";var em=localStorage.getItem("savyn_email")||"";if(document.getElementById("profileEmail"))document.getElementById("profileEmail").textContent=em;if(document.getElementById("profileEmailDisplay"))document.getElementById("profileEmailDisplay").textContent=em;}else{if(sc)sc.style.display="block";if(ps)ps.style.display="none";}}
 const SYSTEM=`You are Savyn AI — warm, sharp, luxury-grade personal finance advisor. Like a brilliant private banker who genuinely cares. Elegant but direct.\n\nUser: Net worth $24,580 | Capital One $8,400 at 24.99% APR (priority #1) | Toyota Auto $14,200 at 6.49% | Navient Student $18,600 at 5.05% | Checking ~$3,200 | Savings $3,840 | Bills $1,800 next 14 days | Disposable ~$1,000 | Saved $847 in interest | 14-day streak.\n\nAlways give dollar amounts. No jargon. Max 3 sentences. Warm but precise.`;
 const history=[{role:'assistant',content:"Hello! I've reviewed your accounts — $41,200 across 3 loans. Your Capital One at 24.99% is costing you the most. Let's fix that. Ask me anything."}];
 function askQuestion(q){document.getElementById('chatInput').value=q;sendChat();}
