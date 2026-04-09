@@ -191,6 +191,10 @@
       <div class="logo-text">Sa<em>vyn</em></div>
     </div>
     <div class="header-pill">Beta</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+    <span id="userEmail" style="font-size:11px;color:rgba(255,255,255,0.5);font-family:Jost,sans-serif;font-weight:400;"></span>
+    <button onclick="logout()" style="font-size:11px;color:rgba(255,255,255,0.4);background:none;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:Jost,sans-serif;transition:all 0.2s;">Sign Out</button>
+  </div>
   </header>
   <div class="tagline">Save more. Owe less.</div><div style="margin:10px 22px 0;display:flex;align-items:center;gap:10px;"><button onclick="openPlaidLink()" style="background:linear-gradient(135deg,#0e6655,#1a8a70);color:white;border:none;border-radius:12px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Jost,sans-serif;">🏦 Connect Bank</button><span id="plaidStatus" style="font-size:12px;color:#0e6655;font-family:Jost,sans-serif;font-weight:500;"></span></div>
   <div class="scroll-content">
@@ -334,6 +338,20 @@ function addMsg(text,role){
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script>
 const BACKEND = 'https://savyn-backend-production.up.railway.app';
+
+const savynToken = localStorage.getItem('savyn_token');
+const savynEmail = localStorage.getItem('savyn_email');
+if (!savynToken) { window.location.href = '/login.html'; }
+
+const emailEl = document.getElementById('userEmail');
+if (emailEl && savynEmail) emailEl.textContent = savynEmail;
+
+function logout() {
+  localStorage.removeItem('savyn_token');
+  localStorage.removeItem('savyn_email');
+  localStorage.removeItem('savyn_user_id');
+  window.location.href = '/login.html';
+}
 
 // Handle OAuth redirect return
 async function initializePlaid() {
