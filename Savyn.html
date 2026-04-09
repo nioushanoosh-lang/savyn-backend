@@ -229,10 +229,38 @@ body { background:var(--bg); font-family:'Jost',sans-serif; font-weight:400; col
     </div>
   </div>
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">Owe</div><div class="stat-value red" id="totalDebt">$41,200</div></div>
+    
     <div class="stat-card"><div class="stat-label">Paid Off</div><div class="stat-value navy">38%</div></div>
     <div class="stat-card"><div class="stat-label">Saved</div><div class="stat-value green">$847</div></div>
   </div>
+  
+  <!-- Savings Progress -->
+  <div class="section" style="margin-top:18px;">
+    <div class="section-title">Your Progress</div>
+    <div class="card" style="padding:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Emergency Fund</div>
+          <div style="font-size:12px;color:var(--ink3);">$847 saved of $5,000 goal</div>
+        </div>
+        <div style="font-size:18px;font-weight:700;color:var(--emerald);font-family:'Playfair Display',serif;">17%</div>
+      </div>
+      <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+        <div style="width:17%;height:100%;background:linear-gradient(90deg,var(--emerald),var(--emerald3));border-radius:4px;transition:width 1s ease;"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink3);">At this rate you'll reach your goal in <strong style="color:var(--emerald);">18 months</strong> 💚</div>
+    </div>
+  </div>
+
+  <!-- Interest Saved Badge -->
+  <div style="margin:14px 18px 0;background:var(--emerald-pale);border:1px solid rgba(14,102,85,0.15);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;">
+    <div style="font-size:28px;">💰</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--emerald);margin-bottom:2px;">Interest you're saving</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--navy);">$1,840 <span style="font-size:13px;font-weight:400;color:var(--ink3);">this year</span></div>
+    </div>
+  </div>
+
   <button class="connect-btn" id="connectBankBtn" onclick="openPlaidLink()">🏦 Connect Your Bank</button>
   <div class="rec-card">
     <div class="rec-content">
@@ -246,20 +274,14 @@ body { background:var(--bg); font-family:'Jost',sans-serif; font-weight:400; col
       <button class="rec-btn" id="recBtn" onclick="confirmPayment()">✓ Got it — I'll make this payment</button>
     </div>
   </div>
-  <div class="section" style="margin-top:18px;">
-    <div class="section-title">Spending This Month</div>
-    <div class="card">
-      <div class="category-item"><div class="category-icon" style="background:#fff3e0;">🛒</div><div class="category-name">Groceries</div><div class="category-bar-wrap"><div class="category-bar-fill" style="width:75%;background:#ff9800;"></div></div><div class="category-amount">$412</div></div>
+  <div class="category-amount">$412</div></div>
       <div class="category-item"><div class="category-icon" style="background:#e8f5e9;">🏠</div><div class="category-name">Housing</div><div class="category-bar-wrap"><div class="category-bar-fill" style="width:100%;"></div></div><div class="category-amount">$1,200</div></div>
       <div class="category-item"><div class="category-icon" style="background:#e3f2fd;">🚗</div><div class="category-name">Transport</div><div class="category-bar-wrap"><div class="category-bar-fill" style="width:35%;background:#2196f3;"></div></div><div class="category-amount">$186</div></div>
       <div class="category-item"><div class="category-icon" style="background:#fce4ec;">🍽️</div><div class="category-name">Dining Out</div><div class="category-bar-wrap"><div class="category-bar-fill" style="width:45%;background:#e91e63;"></div></div><div class="category-amount">$234</div></div>
       <div class="category-item"><div class="category-icon" style="background:#f3e5f5;">📱</div><div class="category-name">Subscriptions</div><div class="category-bar-wrap"><div class="category-bar-fill" style="width:20%;background:#9c27b0;"></div></div><div class="category-amount">$87</div></div>
     </div>
   </div>
-  <div class="section" style="margin-top:18px;margin-bottom:20px;">
-    <div class="section-title">Recent Transactions</div>
-    <div class="card">
-      <div class="txn-item"><div class="txn-icon" style="background:#e8f5e9;">🛒</div><div class="txn-info"><div class="txn-name">Whole Foods Market</div><div class="txn-date">Today</div></div><div class="txn-amount debit">-$67.43</div></div>
+  <div class="txn-amount debit">-$67.43</div></div>
       <div class="txn-item"><div class="txn-icon" style="background:#e3f2fd;">💳</div><div class="txn-info"><div class="txn-name">Capital One Payment</div><div class="txn-date">Yesterday</div></div><div class="txn-amount debit">-$250.00</div></div>
       <div class="txn-item"><div class="txn-icon" style="background:#f3e5f5;">🎵</div><div class="txn-info"><div class="txn-name">Spotify Premium</div><div class="txn-date">Apr 7</div></div><div class="txn-amount debit">-$10.99</div></div>
       <div class="txn-item"><div class="txn-icon" style="background:#e8f5e9;">💰</div><div class="txn-info"><div class="txn-name">Paycheck — Direct Deposit</div><div class="txn-date">Apr 5</div></div><div class="txn-amount credit">+$2,500.00</div></div>
