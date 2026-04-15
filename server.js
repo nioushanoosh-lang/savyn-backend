@@ -186,6 +186,110 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
 });
 
 
+
+// ── SAVYN AI CHAT ──
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, history } = req.body;
+    if (!message) return res.status(400).json({ error: 'No message provided' });
+
+    // Get user financial context
+    let financialContext = '';
+    try {
+      const accessToken = accessTokens['test-user-001'];
+      if (accessToken) {
+        const [balRes, liabRes] = await Promise.all([
+          plaidClient.accountsBalanceGet({ access_token: accessToken }),
+          plaidClient.liabilitiesGet({ access_token: accessToken })
+        ]);
+        const accounts = balRes.data.accounts;
+        const liabilities = liabRes.data.liabilities;
+        const checkingBal = accounts.find(a => a.subtype === 'checking');
+        const creditCards = liabilities.credit || [];
+        const studentLoans = liabilities.student || [];
+        financialContext = `
+User's real financial data:
+- Checking balance: $${checkingBal ? checkingBal.balances.available : 'unknown'}
+- Credit cards: ${creditCards.map(c => c.name + ' $' + c.last_statement_balance + ' at ' + (c.aprs?.[0]?.apr_percentage || '?') + '%').join(', ') || 'none'}
+- Student loans: ${studentLoans.map(l => l.loan_name + ' $' + l.outstanding_principal_amount).join(', ') || 'none'}
+`;
+      }
+    } catch(e) {
+      financialContext = 'No bank account connected yet.';
+    }
+
+    const systemPrompt = `You are Savyn AI — a friendly, witty personal financial advisor built into the Savyn app. You help users pay off debt faster and save more money automatically.
+
+Your personality:
+- Warm, encouraging, and slightly funny 😄
+- Use emojis naturally (not excessively)
+- Celebrate wins enthusiastically
+- Make finance feel less scary and more fun
+- Keep responses concise — 2-4 sentences max unless explaining something complex
+- Never be preachy or lecture-y
+
+You understand these Digit-style commands:
+- "how much saved" / "balance" → tell them their savings balance
+- "save more" / "aggressive" → suggest increasing savings aggressiveness
+- "pause" → explain how to pause savings in Profile tab
+- "withdraw" → explain they can adjust in Goals tab
+- "which loan first" → explain avalanche method
+- "when debt free" → calculate based on their data
+- "how much can I save" → run the optimizer logic
+- "new goal [name] [amount]" → acknowledge and guide to Goals tab
+
+You know about:
+- Avalanche method (highest APR first)
+- Debt payoff optimization
+- Safe savings buffers
+- The importance of emergency funds
+- Compound interest
+
+${financialContext}
+
+Always end responses with something encouraging or a small actionable tip. Keep it real, keep it fun! 💚`;
+
+    const messages = [];
+    if (history && history.length > 0) {
+      history.slice(-8).forEach(h => {
+        if (h.role === 'user' || h.role === 'assistant') {
+          messages.push({ role: h.role, content: h.content });
+        }
+      });
+    }
+    messages.push({ role: 'user', content: message });
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) {
+      console.error('Anthropic error:', data.error);
+      return res.status(500).json({ error: 'AI error', reply: "Hmm, my brain glitched for a sec 🧠 Try asking me again!" });
+    }
+
+    const reply = data.content?.[0]?.text || "I'm thinking... 🤔 Could you try asking that again?";
+    res.json({ reply });
+
+  } catch (err) {
+    console.error('Chat error:', err.message);
+    res.status(500).json({ reply: "Oops! Something went sideways on my end 😅 Try again in a moment!" });
+  }
+});
+
+
 app.get('/api/optimize', async (req, res) => {
   try {
     const accessToken = accessTokens['test-user-001'];
