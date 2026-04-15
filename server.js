@@ -259,22 +259,20 @@ Always end responses with something encouraging or a small actionable tip. Keep 
     }
     messages.push({ role: 'user', content: message });
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
+    const axios = require('axios');
+    const axiosResponse = await axios.post('https://api.anthropic.com/v1/messages', {
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
         system: systemPrompt,
         messages: messages
-      })
+      }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      }
     });
-
-    const data = await response.json();
+    const data = axiosResponse.data;
     if (data.error) {
       console.error('Anthropic error:', data.error);
       return res.status(500).json({ error: 'AI error', reply: "Hmm, my brain glitched for a sec 🧠 Try asking me again!" });
