@@ -447,17 +447,24 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
         <div class="ai-desc">Ask me anything about your money</div>
       </div>
     </div>
-    <div class="quick-row">
-      <div class="qbtn" onclick="quickChat(this)">How much can I save?</div>
-      <div class="qbtn" onclick="quickChat(this)">Which loan costs most?</div>
-      <div class="qbtn" onclick="quickChat(this)">When am I debt free?</div>
-      <div class="qbtn" onclick="quickChat(this)">Should I save or pay debt?</div>
-      <div class="qbtn" onclick="quickChat(this)">What is avalanche method?</div>
+    <!-- Suggested questions intro -->
+    <div style="padding:14px 18px 4px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;">Not sure where to start? Try these 👇</div>
+      <div class="quick-row" style="padding:0;flex-wrap:wrap;gap:8px;">
+        <div class="qbtn" onclick="quickChat(this)">💳 Which loan should I pay first?</div>
+        <div class="qbtn" onclick="quickChat(this)">📅 When will I be debt free?</div>
+        <div class="qbtn" onclick="quickChat(this)">💰 How much can I safely save this week?</div>
+        <div class="qbtn" onclick="quickChat(this)">🎯 Am I on track with my goals?</div>
+        <div class="qbtn" onclick="quickChat(this)">☕ How much did I spend on fun things?</div>
+        <div class="qbtn" onclick="quickChat(this)">📈 How do I pay less interest?</div>
+        <div class="qbtn" onclick="quickChat(this)">🛡️ Do I have enough emergency savings?</div>
+        <div class="qbtn" onclick="quickChat(this)">🏠 When can I start saving for a home?</div>
+      </div>
     </div>
     <div class="chat-area" id="chatArea">
       <div class="msg ai">
         <div class="msg-av ai">💚</div>
-        <div class="bubble">Hey! I'm your Savyn AI advisor 👋<br><br>I can see you have <strong>$41,200 across 3 loans</strong>. Your Capital One at <strong>24.99% APR</strong> is the most expensive — that's where we focus first.<br><br>What would you like to know? 💚</div>
+        <div class="bubble">Hey! I'm Savyn AI — your personal money coach 💚👋<br><br>I'm here to help you <strong>pay off debt faster</strong> and <strong>save more</strong> without the stress. No judgment, no jargon — just real advice that works 🎯<br><br>Not sure where to start? Tap one of the questions above — I've got you! Or just ask me anything on your mind 👇</div>
       </div>
     </div>
     <div class="chat-input-bar">
