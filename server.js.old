@@ -1,0 +1,343 @@
+
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
+const { Pool } = require('pg');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const JWT_SECRET = process.env.JWT_SECRET || 'savyn-secret-key';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+async function initDB() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        plaid_access_token TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS transfer_history (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        loan_name TEXT,
+        status VARCHAR(50) DEFAULT 'success',
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS plaid_access_token TEXT;`);
+    console.log('Database tables ready');
+  } catch (err) {
+    console.error('DB init error:', err.message);
+  }
+}
+initDB();
+
+const plaidConfig = new Configuration({
+  basePath: PlaidEnvironments[process.env.PLAID_ENV || 'production'],
+  baseOptions: {
+    headers: {
+      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+      'PLAID-SECRET': process.env.PLAID_ENV === 'sandbox' ? process.env.PLAID_SANDBOX_SECRET : process.env.PLAID_SECRET,
+    },
+  },
+});
+const plaidClient = new PlaidApi(plaidConfig);
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Please log in.' });
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (err) {
+    res.status(403).json({ error: 'Invalid session. Please log in again.' });
+  }
+}
+
+async function getPlaidToken(userId) {
+  const result = await pool.query('SELECT plaid_access_token FROM users WHERE id = $1', [userId]);
+  return result.rows[0]?.plaid_access_token || null;
+}
+
+app.get('/', (req, res) => res.json({ status: 'Savyn backend running' }));
+
+app.post('/api/auth/signup', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Email and password required.' });
+    if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
+    if (existing.rows.length > 0) return res.status(400).json({ error: 'Account already exists.' });
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const result = await pool.query('INSERT INTO users (email, password_hash, created_at) VALUES ($1, $2, NOW()) RETURNING id, email', [email.toLowerCase(), hashedPassword]);
+    const user = result.rows[0];
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    res.json({ success: true, token, email: user.email, userId: user.id });
+  } catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).json({ error: 'Failed to create account.' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Email and password required.' });
+    const result = await pool.query('SELECT id, email, password_hash FROM users WHERE email = $1', [email.toLowerCase()]);
+    if (result.rows.length === 0) return res.status(400).json({ error: 'No account found.' });
+    const user = result.rows[0];
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) return res.status(400).json({ error: 'Incorrect password.' });
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    res.json({ success: true, token, email: user.email, userId: user.id });
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed.' });
+  }
+});
+
+app.get('/api/auth/me', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, email, created_at FROM users WHERE id = $1', [req.user.userId]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'User not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get user info.' });
+  }
+});
+
+app.post('/api/create-link-token', authenticateToken, async (req, res) => {
+  try {
+    const response = await plaidClient.linkTokenCreate({
+      user: { client_user_id: String(req.user.userId) },
+      client_name: 'Savyn',
+      products: ['transactions', 'liabilities'],
+      country_codes: ['US'],
+      language: 'en',
+      redirect_uri: 'https://www.savynapp.com/Savyn.html',
+    });
+    res.json({ link_token: response.data.link_token });
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to create link token' });
+  }
+});
+
+app.post('/api/exchange-token', authenticateToken, async (req, res) => {
+  try {
+    const { public_token } = req.body;
+    const response = await plaidClient.itemPublicTokenExchange({ public_token });
+    const accessToken = response.data.access_token;
+    await pool.query('UPDATE users SET plaid_access_token = $1 WHERE id = $2', [accessToken, req.user.userId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to exchange token' });
+  }
+});
+
+app.get('/api/balances', authenticateToken, async (req, res) => {
+  try {
+    const accessToken = await getPlaidToken(req.user.userId);
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+    const response = await plaidClient.accountsBalanceGet({ access_token: accessToken });
+    res.json(response.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to get balances' });
+  }
+});
+
+app.get('/api/liabilities', authenticateToken, async (req, res) => {
+  try {
+    const accessToken = await getPlaidToken(req.user.userId);
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+    const response = await plaidClient.liabilitiesGet({ access_token: accessToken });
+    res.json(response.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to get liabilities' });
+  }
+});
+
+app.post('/api/chat', authenticateToken, async (req, res) => {
+  try {
+    const { message, history } = req.body;
+    if (!message) return res.status(400).json({ error: 'No message provided' });
+    let financialContext = 'No bank account connected yet.';
+    try {
+      const accessToken = await getPlaidToken(req.user.userId);
+      if (accessToken) {
+        const [balRes, liabRes] = await Promise.all([
+          plaidClient.accountsBalanceGet({ access_token: accessToken }),
+          plaidClient.liabilitiesGet({ access_token: accessToken })
+        ]);
+        const accounts = balRes.data.accounts;
+        const liabilities = liabRes.data.liabilities;
+        const checking = accounts.find(a => a.subtype === 'checking');
+        const savings = accounts.find(a => a.subtype === 'savings');
+        const creditCards = liabilities.credit || [];
+        const studentLoans = liabilities.student || [];
+        financialContext = `User real data:
+- Checking: $${checking ? checking.balances.available : 'unknown'}
+- Savings: $${savings ? savings.balances.available : 'unknown'}
+- Credit cards: ${creditCards.map(c => `${c.name} $${c.last_statement_balance} at ${c.aprs?.[0]?.apr_percentage || '?'}% APR`).join(', ') || 'none'}
+- Student loans: ${studentLoans.map(l => `${l.loan_name} $${l.outstanding_principal_amount}`).join(', ') || 'none'}`;
+      }
+    } catch (e) { console.error('Context error:', e.message); }
+
+    const systemPrompt = `You are Savyn AI — a friendly, witty personal financial advisor. Help users pay off debt faster and save more money.
+Personality: warm, encouraging, slightly funny, use emojis naturally, keep responses to 2-4 sentences, never preachy.
+${financialContext}
+Always end with something encouraging or a small actionable tip. 💚`;
+
+    const messages = [];
+    if (history && history.length > 0) {
+      history.slice(-8).forEach(h => {
+        if (h.role === 'user' || h.role === 'assistant') messages.push({ role: h.role, content: h.content });
+      });
+    }
+    messages.push({ role: 'user', content: message });
+
+    const axiosResponse = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 400,
+      system: systemPrompt,
+      messages
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+    const reply = axiosResponse.data.content?.[0]?.text || "Try asking me again! 🤔";
+    res.json({ reply });
+  } catch (err) {
+    console.error('Chat error:', err.message);
+    res.status(500).json({ reply: "Oops! Try again in a moment 😅" });
+  }
+});
+
+app.get('/api/optimize', authenticateToken, async (req, res) => {
+  try {
+    const accessToken = await getPlaidToken(req.user.userId);
+    if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
+
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setFullYear(startDate.getFullYear() - 1);
+    const startStr = startDate.toISOString().split('T')[0];
+    const endStr = today.toISOString().split('T')[0];
+
+    const [balRes, txRes, liabRes] = await Promise.all([
+      plaidClient.accountsBalanceGet({ access_token: accessToken }),
+      plaidClient.transactionsGet({ access_token: accessToken, start_date: startStr, end_date: endStr }),
+      plaidClient.liabilitiesGet({ access_token: accessToken }),
+    ]);
+
+    const accounts = balRes.data.accounts;
+    const transactions = txRes.data.transactions;
+    const liabilities = liabRes.data.liabilities;
+
+    const checking = accounts.find(a => a.subtype === 'checking');
+    const checkingBalance = checking ? (checking.balances.available || 0) : 0;
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentTx = transactions.filter(t => t.amount > 0 && new Date(t.date) >= thirtyDaysAgo);
+    const totalRecentSpend = recentTx.reduce((sum, t) => sum + t.amount, 0);
+    const avgWeeklySpend = totalRecentSpend / 4.3;
+    const safetyBuffer = avgWeeklySpend * 2;
+    const disposable = Math.max(0, checkingBalance - safetyBuffer);
+
+    const creditCards = liabilities.credit || [];
+    const studentLoans = liabilities.student || [];
+    let allLoans = [
+      ...creditCards.map(c => ({
+        name: c.name || 'Credit Card',
+        balance: c.last_statement_balance || c.current_balance || 0,
+        apr: c.aprs?.[0]?.apr_percentage || 0,
+        minPayment: c.minimum_payment_amount || 25,
+        type: 'credit'
+      })),
+      ...studentLoans.map(l => ({
+        name: l.loan_name || 'Student Loan',
+        balance: l.outstanding_principal_amount || 0,
+        apr: l.interest_rate_percentage || 0,
+        minPayment: l.minimum_payment_amount || 100,
+        type: 'student'
+      }))
+    ].filter(l => l.balance > 0);
+
+    allLoans.sort((a, b) => b.apr - a.apr);
+    const topLoan = allLoans[0];
+
+    if (!topLoan || disposable < 50) {
+      return res.json({ recommendation: null, message: 'Not enough disposable income right now.', disposable: Math.round(disposable), checkingBalance: Math.round(checkingBalance), safetyBuffer: Math.round(safetyBuffer), loans: allLoans });
+    }
+
+    const extraPayment = Math.min(Math.round(disposable * 0.6), Math.round(topLoan.balance));
+    const monthlyRate = topLoan.apr / 100 / 12;
+
+    const currentMonths = monthlyRate > 0 && topLoan.minPayment > topLoan.balance * monthlyRate
+      ? Math.log(topLoan.minPayment / (topLoan.minPayment - topLoan.balance * monthlyRate)) / Math.log(1 + monthlyRate)
+      : topLoan.balance / Math.max(topLoan.minPayment, 1);
+
+    const newBalance = topLoan.balance - extraPayment;
+    const newMonths = monthlyRate > 0 && topLoan.minPayment > newBalance * monthlyRate
+      ? Math.log(topLoan.minPayment / (topLoan.minPayment - newBalance * monthlyRate)) / Math.log(1 + monthlyRate)
+      : newBalance / Math.max(topLoan.minPayment, 1);
+
+    const monthsSaved = Math.max(0, Math.round(currentMonths - newMonths));
+    const totalInterestBefore = Math.max(0, (currentMonths * topLoan.minPayment) - topLoan.balance);
+    const totalInterestAfter = Math.max(0, (newMonths * topLoan.minPayment) - newBalance);
+    const interestSaved = Math.max(0, Math.round(totalInterestBefore - totalInterestAfter));
+
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + Math.round(newMonths));
+    const payoffStr = payoffDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+
+    const totalDebt = allLoans.reduce((sum, l) => sum + l.balance, 0);
+    const totalMinPayments = allLoans.reduce((sum, l) => sum + l.minPayment, 0);
+    const avgApr = allLoans.reduce((sum, l) => sum + l.apr, 0) / allLoans.length;
+    const avgMonthlyRate = avgApr / 100 / 12;
+    const estimatedMonths = avgMonthlyRate > 0 && totalMinPayments > totalDebt * avgMonthlyRate
+      ? Math.log(totalMinPayments / (totalMinPayments - totalDebt * avgMonthlyRate)) / Math.log(1 + avgMonthlyRate)
+      : totalDebt / Math.max(totalMinPayments, 1);
+    const debtFreeYear = new Date().getFullYear() + Math.ceil(estimatedMonths / 12);
+
+    res.json({
+      recommendation: { loanName: topLoan.name, apr: topLoan.apr, extraPayment, interestSaved, monthsSaved, newPayoffDate: payoffStr, currentBalance: Math.round(topLoan.balance) },
+      disposable: Math.round(disposable),
+      checkingBalance: Math.round(checkingBalance),
+      safetyBuffer: Math.round(safetyBuffer),
+      totalDebt: Math.round(totalDebt),
+      debtFreeYear,
+      loans: allLoans,
+      message: `Pay $${extraPayment} extra on your ${topLoan.name} today. You will save $${interestSaved} in interest and finish ${monthsSaved} months early.`
+    });
+  } catch (err) {
+    console.error('Optimizer error:', err.response ? err.response.data : err.message);
+    res.status(500).json({ error: 'Optimizer failed: ' + err.message });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Savyn backend running on port ${PORT}`);
+});

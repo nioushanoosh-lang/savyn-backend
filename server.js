@@ -85,11 +85,11 @@ app.post('/api/create-link-token', async (req, res) => {
   }
 });
 
-app.post('/api/exchange-token', async (req, res) => {
+app.post('/api/exchange-token', authenticateToken, async (req, res) => {
   try {
     const { public_token } = req.body;
     const response = await plaidClient.itemPublicTokenExchange({ public_token });
-    accessTokens['test-user-001'] = response.data.access_token;
+    pool.query('UPDATE users SET plaid_access_token = $1 WHERE id = $2', [response.data.access_token, req.user.userId]);
     res.json({ success: true });
   } catch (err) {
     console.error(err.response?.data || err.message);
@@ -97,9 +97,10 @@ app.post('/api/exchange-token', async (req, res) => {
   }
 });
 
-app.get('/api/balances', async (req, res) => {
+app.get('/api/balances', authenticateToken, async (req, res) => {
   try {
-    const accessToken = accessTokens['test-user-001'];
+    const dbr1 = await pool.query('SELECT plaid_access_token FROM users WHERE id = $1', [req.user.userId]);
+    const accessToken = dbr1.rows[0] ? dbr1.rows[0].plaid_access_token : null;
     if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
     const response = await plaidClient.accountsBalanceGet({ access_token: accessToken });
     res.json(response.data);
@@ -109,9 +110,10 @@ app.get('/api/balances', async (req, res) => {
   }
 });
 
-app.get('/api/liabilities', async (req, res) => {
+app.get('/api/liabilities', authenticateToken, async (req, res) => {
   try {
-    const accessToken = accessTokens['test-user-001'];
+    const dbr114 = await pool.query('SELECT plaid_access_token FROM users WHERE id = $1', [req.user.userId]);
+    const accessToken = dbr114.rows[0] ? dbr114.rows[0].plaid_access_token : null;
     if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
     const response = await plaidClient.liabilitiesGet({ access_token: accessToken });
     res.json(response.data);
@@ -196,7 +198,8 @@ app.post('/api/chat', async (req, res) => {
     // Get user financial context
     let financialContext = '';
     try {
-      const accessToken = accessTokens['test-user-001'];
+    const dbr200 = await pool.query('SELECT plaid_access_token FROM users WHERE id = $1', [req.user.userId]);
+    const accessToken = dbr200.rows[0] ? dbr200.rows[0].plaid_access_token : null;
       if (accessToken) {
         const [balRes, liabRes] = await Promise.all([
           plaidClient.accountsBalanceGet({ access_token: accessToken }),
@@ -288,9 +291,10 @@ Always end responses with something encouraging or a small actionable tip. Keep 
 });
 
 
-app.get('/api/optimize', async (req, res) => {
+app.get('/api/optimize', authenticateToken, async (req, res) => {
   try {
-    const accessToken = accessTokens['test-user-001'];
+    const dbr295 = await pool.query('SELECT plaid_access_token FROM users WHERE id = $1', [req.user.userId]);
+    const accessToken = dbr295.rows[0] ? dbr295.rows[0].plaid_access_token : null;
     if (!accessToken) return res.status(400).json({ error: 'No account linked yet' });
     const [balRes, txRes, liabRes] = await Promise.all([
       plaidClient.accountsBalanceGet({ access_token: accessToken }),
