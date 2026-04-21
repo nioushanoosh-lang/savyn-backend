@@ -127,7 +127,7 @@ app.get('/api/liabilities', authenticateToken, async (req, res) => {
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'savyn-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'savyn-super-secret-key-2026-change-this';
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
