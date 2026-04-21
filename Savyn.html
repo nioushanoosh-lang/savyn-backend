@@ -718,131 +718,15 @@ async function loadData() {
     ]);
     const bal = await balRes.json();
     const opt = await optRes.json();
-    
-    console.log('BAL:', JSON.stringify(bal));
-    console.log('OPT:', JSON.stringify(opt));
 
     if (bal.accounts) {
-      let checkingTotal = 0;
-      let savingsTotal = 0;
-      bal.accounts.forEach(a => {
-        if (a.type === 'depository') {
-          checkingTotal += a.balances.current || 0;
-        }
-      });
-      const fmt = '
-
-    if (opt.recommendation) {
-      const r = opt.recommendation;
-      document.getElementById('recMsg').innerHTML =
-        'Pay <strong>$' + r.extraPayment.toLocaleString() + ' extra</strong> on your ' + r.loanName +
-        ' today. You\'ll save <span class="em">$' + r.interestSaved.toLocaleString() + ' in interest</span> and finish <strong>' + r.monthsSaved + ' months early.</strong>';
-      document.getElementById('chipInterest').textContent = '$' + r.interestSaved.toLocaleString();
-      document.getElementById('chipMonths').textContent = r.monthsSaved + ' mo';
-      document.getElementById('chipPayoff').textContent = r.newPayoffDate;
-    }
-  } catch (err) { console.log('Data load error:', err); }
-}
-
-window.addEventListener('load', loadData);
-
-// ── CONFIRM PAYMENT ──
-function confirmAction() {
-  const btn = document.getElementById('recBtn');
-  btn.textContent = '🎉 Amazing! You\'re saving thousands!';
-  btn.style.background = 'linear-gradient(135deg,#25a882,#1a8a70)';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = '✓ Got it — I\'ll make this payment';
-    btn.style.background = '';
-    btn.disabled = false;
-  }, 3000);
-}
-
-// ── AI CHAT ──
-const history = [{ role: 'assistant', content: "Hey! I'm your Savyn AI advisor. I can see you have $41,200 across 3 loans. Your Capital One at 24.99% APR is the most expensive. Ask me anything!" }];
-
-function quickChat(el) {
-  document.getElementById('chatInput').value = el.textContent;
-  sendChat();
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  addMsg('user', msg);
-  history.push({ role: 'user', content: msg });
-  const typing = showTyping();
-  try {
-    const res = await fetch(BACKEND + '/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ message: msg, history })
-    });
-    const data = await res.json();
-    typing.remove();
-    const reply = data.reply || "I'm here to help with your finances! 💚";
-    addMsg('ai', reply);
-    history.push({ role: 'assistant', content: reply });
-  } catch (err) {
-    typing.remove();
-    addMsg('ai', "Having trouble connecting. Try again in a moment! 💚");
-  }
-}
-
-function addMsg(role, text) {
-  const area = document.getElementById('chatArea');
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  div.innerHTML = '<div class="msg-av ' + role + '">' + (role === 'ai' ? '💚' : '👤') + '</div><div class="bubble">' + text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</div>';
-  area.appendChild(div);
-  area.scrollTop = area.scrollHeight; setTimeout(() => { area.scrollTop = area.scrollHeight; }, 100);
-}
-
-function showTyping() {
-  const area = document.getElementById('chatArea');
-  const div = document.createElement('div');
-  div.className = 'msg ai';
-  div.innerHTML = '<div class="msg-av ai">💚</div><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
-  area.appendChild(div);
-  area.scrollTop = area.scrollHeight; setTimeout(() => { area.scrollTop = area.scrollHeight; }, 100);
-  return div;
-}
-
-document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
-
-// ── GOALS ──
-function addGoal() {
-  alert('Goal creation coming soon! For now your Emergency Fund is growing automatically every day. 💚');
-}
-
-// ── PROFILE ACTIONS ──
-function showAggressiveness() {
-  const choice = prompt('How aggressive should Savyn be with daily savings?\n\n1. Conservative — save $5-15/day (safest)\n2. Moderate — save $15-35/day (recommended)\n3. Aggressive — save $35-60/day (maximum)\n\nEnter 1, 2, or 3:');
-  const map = { '1': 'Conservative', '2': 'Moderate', '3': 'Aggressive' };
-  if (map[choice]) {
-    document.getElementById('aggrDisplay').textContent = map[choice];
-    alert('Updated to ' + map[choice] + '! Savyn will adjust your daily savings starting tomorrow. 💚');
-  }
-}
-
-function showBills() {
-  alert('Coming soon! You\'ll be able to add:\n\n• Monthly credit card bills\n• Quarterly expenses (insurance, taxes)\n• Annual bills\n\nThis helps Savyn calculate a safer savings buffer so you never overdraft. 💚');
-}
-</script>
-</body>
-</html>
- + checkingTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      const els = ['totalSaved','piggyAmount','piggyAllTime','goalsTotalAmt'];
-      els.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = fmt; });
-      
-      // Show bank as connected
-      const connectCard = document.getElementById('connectCard');
-      if (connectCard) connectCard.innerHTML = '<div class="connect-icon">✅</div><div><div class="connect-txt-title">Bank Connected — Wells Fargo</div><div class="connect-txt-sub">Data updated in real time</div></div>';
-      const bankStatus = document.getElementById('bankStatus');
-      if (bankStatus) bankStatus.textContent = 'Connected';
+      let total = 0;
+      bal.accounts.forEach(a => { if (a.type === 'depository') total += a.balances.current || 0; });
+      const fmt = '$' + total.toLocaleString();
+      document.getElementById('totalSaved').textContent = fmt;
+      document.getElementById('piggyAmount').textContent = fmt;
+      document.getElementById('piggyAllTime').textContent = fmt;
+      document.getElementById('goalsTotalAmt').textContent = fmt;
     }
 
     if (opt.recommendation) {
