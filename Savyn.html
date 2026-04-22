@@ -711,22 +711,33 @@ if (window.location.href.includes('?oauth_state_id=')) {
 // ── LOAD REAL DATA ──
 async function loadData() {
   try {
-    const headers = { 'Authorization': 'Bearer ' + token };
+    const headers = {"Authorization": "Bearer " + token};
     const [balRes, optRes] = await Promise.all([
-      fetch(BACKEND + '/api/balances', { headers }),
-      fetch(BACKEND + '/api/optimize', { headers })
+      fetch(BACKEND + "/api/balances", { headers }),
+      fetch(BACKEND + "/api/optimize", { headers })
     ]);
     const bal = await balRes.json();
     const opt = await optRes.json();
-
     if (bal.accounts) {
-      let total = 0;
-      bal.accounts.forEach(a => { if (a.type === 'depository') total += a.balances.current || 0; });
-      const fmt = '$' + total.toLocaleString();
-      document.getElementById('totalSaved').textContent = fmt;
-      document.getElementById('piggyAmount').textContent = fmt;
-      document.getElementById('piggyAllTime').textContent = fmt;
-      document.getElementById('goalsTotalAmt').textContent = fmt;
+      let checking = 0;
+      bal.accounts.forEach(function(a) { if (a.type === "depository") checking += a.balances.current || 0; });
+      const fmt = "$" + Math.round(checking).toLocaleString();
+      ["totalSaved","piggyAmount","piggyAllTime","goalsTotalAmt"].forEach(function(id) { const el = document.getElementById(id); if(el) el.textContent = fmt; });
+      const inst = (bal.item && bal.item.institution_name) ? bal.item.institution_name : "Your Bank";
+      const bs = document.getElementById("bankStatus"); if(bs) bs.textContent = inst + " connected";
+    }
+    if (opt.recommendation) {
+      const r = opt.recommendation;
+      const rm = document.getElementById("recMsg");
+      if(rm) rm.innerHTML = "Pay <strong>$" + r.extraPayment.toLocaleString() + " extra</strong> on your " + r.loanName + " this month. You could save <strong>$" + r.interestSaved.toLocaleString() + " in interest</strong> and finish " + r.monthsSaved + " months early. Savyn will not move this money. 💚";
+      const ci = document.getElementById("chipInterest"); if(ci) ci.textContent = "$" + r.interestSaved.toLocaleString();
+      const cm = document.getElementById("chipMonths"); if(cm) cm.textContent = r.monthsSaved + " mo";
+      const cp = document.getElementById("chipPayoff"); if(cp) cp.textContent = r.newPayoffDate;
+    } else if (opt.message) {
+      const rm2 = document.getElementById("recMsg"); if(rm2) rm2.textContent = opt.message;
+    }
+  } catch (err) { console.log("Data load error:", err); }
+}
     }
 
     if (opt.recommendation) {
