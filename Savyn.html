@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Savyn</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js">-zsh</script>
 <style>
 :root {
   --navy: #0f2137;
@@ -263,17 +263,17 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
               <rect x="16" y="15.5" width="2.8" height="4" rx="1.4" fill="white" opacity="0.8"/>
             </svg>
           </div>
-          <div class="logo-txt">Sa<em>vyn</em></div>
+          <div class="logo-txt">Sa<em>vyn</em>-zsh</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <div class="greeting-txt" id="greeting"></div>
+          <div class="greeting-txt" id="greeting">-zsh</div>
           <div class="notif">🔔</div>
         </div>
       </div>
       <!-- Net worth -->
       <div style="position:relative;z-index:1;">
         <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:4px;">Total Saved</div>
-        <div style="font-family:'Playfair Display',serif;font-size:44px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:8px;" id="totalSaved">$847</div>
+        <div style="font-family:'Playfair Display',serif;font-size:44px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:8px;" id="totalSaved">$0</div>
         <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(37,168,130,0.18);border:1px solid rgba(37,168,130,0.25);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--emerald3);font-weight:500;">💚 $23 saved today</div>
       </div>
     </div>
@@ -293,12 +293,12 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
       <div class="piggy-inner">
         <div class="piggy-top">
           <div class="piggy-label">Your Rainy Day Fund 🐷</div>
-          <div class="piggy-live"><div class="live-dot"></div> Growing daily</div>
+          <div class="piggy-live">-zsh<div class="live-dot">-zsh</div> Growing daily</div>
         </div>
-        <div class="piggy-amount" id="piggyAmount">$847</div>
+        <div class="piggy-amount" id="piggyAmount">$0</div>
         <div class="piggy-sub">Real auto-savings coming soon</div>
         <div class="piggy-bar-wrap">
-          <div class="piggy-bar"><div class="piggy-bar-fill" id="piggyBarFill" style="width:17%;"></div></div>
+          <div class="piggy-bar">-zsh<div class="piggy-bar-fill" id="piggyBarFill" style="width:17%;">-zsh</div>-zsh</div>
           <div class="piggy-bar-labels">
             <div class="piggy-bar-pct" id="piggyPct">0% of goal</div>
             <div class="piggy-bar-goal">Goal: $5,000</div>
@@ -307,7 +307,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
         <div class="piggy-stats">
           <div class="piggy-stat">$—<div class="piggy-stat-lbl">This Week</div>$—<div class="piggy-stat-val">$0</div>$—</div>
           <div class="piggy-stat">$—<div class="piggy-stat-lbl">This Month</div>$—<div class="piggy-stat-val">$0</div>$—</div>
-          <div class="piggy-stat">$—<div class="piggy-stat-lbl">All Time</div>$—<div class="piggy-stat-val" id="piggyAllTime">$847</div>$—</div>
+          <div class="piggy-stat">$—<div class="piggy-stat-lbl">All Time</div>$—<div class="piggy-stat-val" id="piggyAllTime">$0</div>$—</div>
         </div>
       </div>
     </div>
@@ -315,15 +315,15 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
     <!-- Today's Recommendation -->
     <div class="rec-card">
       <div class="rec-hdr">
-        <div class="rec-dot"></div>
+        <div class="rec-dot">-zsh</div>
         <div class="rec-hdr-txt">Today's Action</div>
       </div>
       <div class="rec-body">
-        <div class="rec-msg" id="recMsg">Pay <strong>$300 extra</strong> on your Capital One card today. You'll save <span class="em">$1,840 in interest</span> and finish <strong>8 months early.</strong></div>
+        <div class="rec-msg" id="recMsg">Pay <strong>$300 extra</strong> on your Capital One card today. You'll save <span class="em">$1,840 in interest</span> and finish <strong>8 months early.</strong>-zsh</div>
         <div class="rec-chips">
-          <div class="chip"><div class="chip-lbl">Interest Saved</div><div class="chip-val" id="chipInterest">$1,840</div></div>
-          <div class="chip"><div class="chip-lbl">Months Early</div><div class="chip-val" id="chipMonths">8 mo</div></div>
-          <div class="chip"><div class="chip-lbl">New Payoff</div><div class="chip-val" id="chipPayoff">Jul '26</div></div>
+          <div class="chip">-zsh<div class="chip-lbl">Interest Saved</div>-zsh<div class="chip-val" id="chipInterest">$1,840</div>-zsh</div>
+          <div class="chip">-zsh<div class="chip-lbl">Months Early</div>-zsh<div class="chip-val" id="chipMonths">8 mo</div>-zsh</div>
+          <div class="chip">-zsh<div class="chip-lbl">New Payoff</div>-zsh<div class="chip-val" id="chipPayoff">Jul '26</div>-zsh</div>
         </div>
         <button class="btn-primary" id="recBtn" onclick="confirmAction()">✓ Got it! I'll make this payment</button>
       </div>
@@ -339,17 +339,17 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
             <div style="font-size:12px;color:var(--ink3);">$0 paid off · connect bank to track</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--emerald);">2027</div>
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--emerald);">—</div>
             <div style="font-size:11px;color:var(--ink3);">debt free year</div>
           </div>
         </div>
         <div style="height:10px;background:var(--bg);border-radius:5px;overflow:hidden;">
-          <div style="width:38%;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--emerald),var(--emerald3));transition:width 1s ease;"></div>
+          <div style="width:38%;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--emerald),var(--emerald3));transition:width 1s ease;">-zsh</div>
         </div>
-        <div style="margin-top:10px;font-size:12px;color:var(--ink3);">Following Savyn's advice saves you <strong style="color:var(--emerald);">$1,840 in interest</strong> this year</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--ink3);">Savyn will help you's advice saves you <strong style="color:var(--emerald);">more in interest over time</div>
       </div>
     </div>
-  </div><!-- end home page -->
+  </div>-zsh<!-- end home page -->
 
 
   <!-- LOANS PAGE -->
@@ -357,7 +357,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
     <div class="dark-hdr">
       <div class="hdr-inner">
         <div class="eyebrow">Debt Destroyer</div>
-        <div class="hdr-title">Your <em>Loans</em></div>
+        <div class="hdr-title">Your <em>Loans</em>-zsh</div>
       </div>
     </div>
     <div class="sec" style="margin-top:18px;margin-bottom:20px;">
@@ -381,13 +381,13 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           </div>
           <div class="apr-badge high">24.99% APR</div>
         </div>
-        <div class="loan-progress-labels"><span class="loan-progress-label">Remaining</span><span class="loan-progress-value">$8,200</span></div>
-        <div class="progress-bar"><div class="progress-fill red" style="width:38%;"></div></div>
+        <div class="loan-progress-labels">-zsh<span class="loan-progress-label">Remaining</span>-zsh<span class="loan-progress-value">$8,200</span>-zsh</div>
+        <div class="progress-bar">-zsh<div class="progress-fill red" style="width:38%;">-zsh</div>-zsh</div>
         <div class="loan-note">38% paid off · Started at $13,200</div>
         <div class="loan-stats">
-          <div class="loan-stat"><div class="loan-stat-lbl">Min Payment</div><div class="loan-stat-val">$200/mo</div></div>
-          <div class="loan-stat"><div class="loan-stat-lbl">Interest/mo</div><div class="loan-stat-val" style="color:var(--red);">$171</div></div>
-          <div class="loan-stat"><div class="loan-stat-lbl">Payoff Date</div><div class="loan-stat-val">Jul '26</div></div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Min Payment</div>-zsh<div class="loan-stat-val">$200/mo</div>-zsh</div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Interest/mo</div>-zsh<div class="loan-stat-val" style="color:var(--red);">$171</div>-zsh</div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Payoff Date</div>-zsh<div class="loan-stat-val">Jul '26</div>-zsh</div>
         </div>
       </div>
 
@@ -403,13 +403,13 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           </div>
           <div class="apr-badge high">6.9% APR</div>
         </div>
-        <div class="loan-progress-labels"><span class="loan-progress-label">Remaining</span><span class="loan-progress-value">$14,800</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:52%;"></div></div>
+        <div class="loan-progress-labels">-zsh<span class="loan-progress-label">Remaining</span>-zsh<span class="loan-progress-value">$14,800</span>-zsh</div>
+        <div class="progress-bar">-zsh<div class="progress-fill" style="width:52%;">-zsh</div>-zsh</div>
         <div class="loan-note">52% paid off · Started at $30,800</div>
         <div class="loan-stats">
-          <div class="loan-stat"><div class="loan-stat-lbl">Min Payment</div><div class="loan-stat-val">$385/mo</div></div>
-          <div class="loan-stat"><div class="loan-stat-lbl">Interest/mo</div><div class="loan-stat-val" style="color:var(--red);">$85</div></div>
-          <div class="loan-stat"><div class="loan-stat-lbl">Payoff Date</div><div class="loan-stat-val">Mar '28</div></div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Min Payment</div>-zsh<div class="loan-stat-val">$385/mo</div>-zsh</div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Interest/mo</div>-zsh<div class="loan-stat-val" style="color:var(--red);">$85</div>-zsh</div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Payoff Date</div>-zsh<div class="loan-stat-val">Mar '28</div>-zsh</div>
         </div>
       </div>
 
@@ -425,17 +425,17 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           </div>
           <div class="apr-badge low">4.5% APR</div>
         </div>
-        <div class="loan-progress-labels"><span class="loan-progress-label">Remaining</span><span class="loan-progress-value">$18,200</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:27%;"></div></div>
+        <div class="loan-progress-labels">-zsh<span class="loan-progress-label">Remaining</span>-zsh<span class="loan-progress-value">$18,200</span>-zsh</div>
+        <div class="progress-bar">-zsh<div class="progress-fill" style="width:27%;">-zsh</div>-zsh</div>
         <div class="loan-note">27% paid off · Started at $25,000</div>
         <div class="loan-stats">
-          <div class="loan-stat"><div class="loan-stat-lbl">Min Payment</div><div class="loan-stat-val">$220/mo</div></div>
-          <div class="loan-stat"><div class="loan-stat-lbl">Interest/mo</div><div class="loan-stat-val" style="color:var(--red);">$68</div></div>
-          <div class="loan-stat"><div class="loan-stat-lbl">Payoff Date</div><div class="loan-stat-val">Jun '31</div></div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Min Payment</div>-zsh<div class="loan-stat-val">$220/mo</div>-zsh</div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Interest/mo</div>-zsh<div class="loan-stat-val" style="color:var(--red);">$68</div>-zsh</div>
+          <div class="loan-stat">-zsh<div class="loan-stat-lbl">Payoff Date</div>-zsh<div class="loan-stat-val">Jun '31</div>-zsh</div>
         </div>
       </div>
     </div>
-  </div><!-- end loans page -->
+  </div>-zsh<!-- end loans page -->
 
 
   <!-- AI CHAT PAGE -->
@@ -464,14 +464,14 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
     <div class="chat-area" id="chatArea">
       <div class="msg ai">
         <div class="msg-av ai">💚</div>
-        <div class="bubble">Hey! I'm Savyn AI — your personal money coach 💚👋<br><br>I'm here to help you <strong>pay off debt faster</strong> and <strong>save more</strong> without the stress. No judgment, no jargon — just real advice that works 🎯<br><br>Not sure where to start? Tap one of the questions above — I've got you! Or just ask me anything on your mind 👇</div>
+        <div class="bubble">Hey! I'm Savyn AI — your personal money coach 💚👋<br>-zsh<br>I'm here to help you <strong>pay off debt faster</strong> and <strong>save more</strong> without the stress. No judgment, no jargon — just real advice that works 🎯<br>-zsh<br>Not sure where to start? Tap one of the questions above — I've got you! Or just ask me anything on your mind 👇</div>
       </div>
     </div>
     <div class="chat-input-bar">
       <input type="text" class="chat-input" id="chatInput" placeholder="Ask Savyn anything..."/>
       <button class="send-btn" onclick="sendChat()">➤</button>
     </div>
-  </div><!-- end ai page -->
+  </div>-zsh<!-- end ai page -->
 
 
   <!-- GOALS PAGE -->
@@ -479,7 +479,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
     <div class="goals-hdr">
       <div class="goals-hdr-inner">
         <div class="goals-total-lbl">Total Saved</div>
-        <div class="goals-total-amt" id="goalsTotalAmt">$847</div>
+        <div class="goals-total-amt" id="goalsTotalAmt">$0</div>
         <div class="goals-total-sub">Growing every day on autopilot 💚</div>
       </div>
     </div>
@@ -496,10 +496,10 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           <div class="pill">Active</div>
         </div>
         <div class="goal-amounts">
-          <div class="goal-saved">$847</div>
+          <div class="goal-saved">$0</div>
           <div class="goal-target">of $5,000</div>
         </div>
-        <div class="goal-bar"><div class="goal-fill" style="width:16.9%;"></div></div>
+        <div class="goal-bar">-zsh<div class="goal-fill" style="width:16.9%;">-zsh</div>-zsh</div>
         <div class="goal-footer">
           <div class="goal-pct">17% complete</div>
           <div class="goal-eta">~18 months at this rate</div>
@@ -518,7 +518,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           <div class="goal-saved">$0</div>
           <div class="goal-target">of $2,000</div>
         </div>
-        <div class="goal-bar"><div class="goal-fill" style="width:0%;"></div></div>
+        <div class="goal-bar">-zsh<div class="goal-fill" style="width:0%;">-zsh</div>-zsh</div>
         <div class="goal-footer">
           <div class="goal-pct">0% complete</div>
           <div class="goal-eta">Start saving to build momentum</div>
@@ -537,7 +537,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           <div class="goal-saved">$0</div>
           <div class="goal-target">of $80,000</div>
         </div>
-        <div class="goal-bar"><div class="goal-fill" style="width:0%;"></div></div>
+        <div class="goal-bar">-zsh<div class="goal-fill" style="width:0%;">-zsh</div>-zsh</div>
         <div class="goal-footer">
           <div class="goal-pct">0% complete</div>
           <div class="goal-eta">Clear high-APR debt first to save faster</div>
@@ -546,7 +546,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
 
       <button class="add-goal" onclick="addGoal()">+ Add New Goal</button>
     </div>
-  </div><!-- end goals page -->
+  </div>-zsh<!-- end goals page -->
 
 
   <!-- PROFILE PAGE -->
@@ -555,7 +555,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
       <div class="profile-hdr-inner">
         <div class="p-avatar">💚</div>
         <div class="p-name" id="pName">Member</div>
-        <div class="p-email" id="pEmail"></div>
+        <div class="p-email" id="pEmail">-zsh</div>
       </div>
     </div>
     <div class="sec" style="margin-top:18px;margin-bottom:20px;">
@@ -564,16 +564,16 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
       <div class="sec-title">Savings Settings</div>
       <div class="p-section">
         <div class="p-row" onclick="openPlaidLink()">
-          <div class="p-row-left"><div class="p-row-ico">🏦</div><div class="p-row-lbl">Connected Bank</div></div>
-          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" id="bankStatus">Tap to connect</div><div class="p-row-arr">›</div></div>
+          <div class="p-row-left">-zsh<div class="p-row-ico">🏦</div>-zsh<div class="p-row-lbl">Connected Bank</div>-zsh</div>
+          <div style="display:flex;align-items:center;gap:6px;">-zsh<div class="p-row-val" id="bankStatus">Tap to connect</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
         </div>
         <div class="p-row" onclick="showAggressiveness()">
-          <div class="p-row-left"><div class="p-row-ico">🎚️</div><div class="p-row-lbl">Daily Savings Amount</div></div>
-          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" id="aggrDisplay">Moderate</div><div class="p-row-arr">›</div></div>
+          <div class="p-row-left">-zsh<div class="p-row-ico">🎚️</div>-zsh<div class="p-row-lbl">Daily Savings Amount</div>-zsh</div>
+          <div style="display:flex;align-items:center;gap:6px;">-zsh<div class="p-row-val" id="aggrDisplay">Moderate</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
         </div>
         <div class="p-row" onclick="showBills()">
-          <div class="p-row-left"><div class="p-row-ico">📋</div><div class="p-row-lbl">My Bills & Credit Cards</div></div>
-          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val">Add bills</div><div class="p-row-arr">›</div></div>
+          <div class="p-row-left">-zsh<div class="p-row-ico">📋</div>-zsh<div class="p-row-lbl">My Bills & Credit Cards</div>-zsh</div>
+          <div style="display:flex;align-items:center;gap:6px;">-zsh<div class="p-row-val">Add bills</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
         </div>
       </div>
 
@@ -581,40 +581,40 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
       <div class="sec-title" style="margin-top:16px;">Notifications</div>
       <div class="p-section">
         <div class="p-row">
-          <div class="p-row-left"><div class="p-row-ico">💰</div><div class="p-row-lbl">Daily savings alerts</div></div>
-          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" style="color:var(--emerald);">On</div><div class="p-row-arr">›</div></div>
+          <div class="p-row-left">-zsh<div class="p-row-ico">💰</div>-zsh<div class="p-row-lbl">Daily savings alerts</div>-zsh</div>
+          <div style="display:flex;align-items:center;gap:6px;">-zsh<div class="p-row-val" style="color:var(--emerald);">On</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
         </div>
         <div class="p-row">
-          <div class="p-row-left"><div class="p-row-ico">🎯</div><div class="p-row-lbl">Payment reminders</div></div>
-          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" style="color:var(--emerald);">On</div><div class="p-row-arr">›</div></div>
+          <div class="p-row-left">-zsh<div class="p-row-ico">🎯</div>-zsh<div class="p-row-lbl">Payment reminders</div>-zsh</div>
+          <div style="display:flex;align-items:center;gap:6px;">-zsh<div class="p-row-val" style="color:var(--emerald);">On</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
         </div>
       </div>
 
       <!-- Account -->
       <div class="sec-title" style="margin-top:16px;">Account</div>
       <div class="p-section">
-        <div class="p-row"><div class="p-row-left"><div class="p-row-ico">📊</div><div class="p-row-lbl">Plan</div></div><div style="display:flex;align-items:center;gap:6px;"><div class="pill">Beta · Free</div><div class="p-row-arr">›</div></div></div>
-        <div class="p-row" onclick="window.location.href='/privacy.html'"><div class="p-row-left"><div class="p-row-ico">🔒</div><div class="p-row-lbl">Privacy Policy</div></div><div class="p-row-arr">›</div></div>
-        <div class="p-row" onclick="window.location.href='/terms.html'"><div class="p-row-left"><div class="p-row-ico">📄</div><div class="p-row-lbl">Terms of Service</div></div><div class="p-row-arr">›</div></div>
-        <div class="p-row" onclick="window.location.href='mailto:hello@savynapp.com'"><div class="p-row-left"><div class="p-row-ico">💬</div><div class="p-row-lbl">Contact Support</div></div><div class="p-row-arr">›</div></div>
+        <div class="p-row">-zsh<div class="p-row-left">-zsh<div class="p-row-ico">📊</div>-zsh<div class="p-row-lbl">Plan</div>-zsh</div>-zsh<div style="display:flex;align-items:center;gap:6px;">-zsh<div class="pill">Beta · Free</div>-zsh<div class="p-row-arr">›</div>-zsh</div>-zsh</div>
+        <div class="p-row" onclick="window.location.href='/privacy.html'">-zsh<div class="p-row-left">-zsh<div class="p-row-ico">🔒</div>-zsh<div class="p-row-lbl">Privacy Policy</div>-zsh</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
+        <div class="p-row" onclick="window.location.href='/terms.html'">-zsh<div class="p-row-left">-zsh<div class="p-row-ico">📄</div>-zsh<div class="p-row-lbl">Terms of Service</div>-zsh</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
+        <div class="p-row" onclick="window.location.href='mailto:hello@savynapp.com'">-zsh<div class="p-row-left">-zsh<div class="p-row-ico">💬</div>-zsh<div class="p-row-lbl">Contact Support</div>-zsh</div>-zsh<div class="p-row-arr">›</div>-zsh</div>
       </div>
 
       <button class="signout" onclick="logout()">Sign Out</button>
       <div style="text-align:center;margin-top:18px;font-size:11px;color:var(--ink3);">Savyn v1.0 Beta · savynapp.com 💚</div>
     </div>
-  </div><!-- end profile page -->
+  </div>-zsh<!-- end profile page -->
 
 
   <!-- BOTTOM NAV -->
   <nav class="nav">
-    <button class="nav-btn on" onclick="goTo('home',this)"><div class="nav-ico">🏠</div><div class="nav-lbl">Home</div></button>
-    <button class="nav-btn" onclick="goTo('loans',this)"><div class="nav-ico">📉</div><div class="nav-lbl">Loans</div></button>
-    <button class="nav-btn" onclick="goTo('ai',this)"><div class="nav-ico">💚</div><div class="nav-lbl">Savyn AI</div></button>
-    <button class="nav-btn" onclick="goTo('goals',this)"><div class="nav-ico">🎯</div><div class="nav-lbl">Goals</div></button>
-    <button class="nav-btn" onclick="goTo('profile',this)"><div class="nav-ico">👤</div><div class="nav-lbl">Profile</div></button>
+    <button class="nav-btn on" onclick="goTo('home',this)">-zsh<div class="nav-ico">🏠</div>-zsh<div class="nav-lbl">Home</div>-zsh</button>
+    <button class="nav-btn" onclick="goTo('loans',this)">-zsh<div class="nav-ico">📉</div>-zsh<div class="nav-lbl">Loans</div>-zsh</button>
+    <button class="nav-btn" onclick="goTo('ai',this)">-zsh<div class="nav-ico">💚</div>-zsh<div class="nav-lbl">Savyn AI</div>-zsh</button>
+    <button class="nav-btn" onclick="goTo('goals',this)">-zsh<div class="nav-ico">🎯</div>-zsh<div class="nav-lbl">Goals</div>-zsh</button>
+    <button class="nav-btn" onclick="goTo('profile',this)">-zsh<div class="nav-ico">👤</div>-zsh<div class="nav-lbl">Profile</div>-zsh</button>
   </nav>
 
-</div><!-- end app screen -->
+</div>-zsh<!-- end app screen -->
 
 <script>
 const BACKEND = 'https://savyn-backend-production.up.railway.app';
@@ -676,7 +676,7 @@ async function openPlaidLink() {
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify({ public_token })
         });
-        document.getElementById('connectCard').innerHTML = '<div class="connect-icon">✅</div><div><div class="connect-txt-title">Bank Connected!</div><div class="connect-txt-sub">Your data is loading...</div></div>';
+        document.getElementById('connectCard').innerHTML = '<div class="connect-icon">✅</div>-zsh<div>-zsh<div class="connect-txt-title">Bank Connected!</div>-zsh<div class="connect-txt-sub">Your data is loading...</div>-zsh</div>';
         document.getElementById('bankStatus').textContent = 'Connected';
         loadData();
       },
@@ -799,7 +799,7 @@ function addMsg(role, text) {
   const area = document.getElementById('chatArea');
   const div = document.createElement('div');
   div.className = 'msg ' + role;
-  div.innerHTML = '<div class="msg-av ' + role + '">' + (role === 'ai' ? '💚' : '👤') + '</div><div class="bubble">' + text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</div>';
+  div.innerHTML = '<div class="msg-av ' + role + '">' + (role === 'ai' ? '💚' : '👤') + '</div>-zsh<div class="bubble">' + text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</div>';
   area.appendChild(div);
   area.scrollTop = area.scrollHeight; setTimeout(() => { area.scrollTop = area.scrollHeight; }, 100);
 }
@@ -808,7 +808,7 @@ function showTyping() {
   const area = document.getElementById('chatArea');
   const div = document.createElement('div');
   div.className = 'msg ai';
-  div.innerHTML = '<div class="msg-av ai">💚</div><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  div.innerHTML = '<div class="msg-av ai">💚</div>-zsh<div class="bubble">-zsh<div class="typing-indicator">-zsh<div class="typing-dot">-zsh</div>-zsh<div class="typing-dot">-zsh</div>-zsh<div class="typing-dot">-zsh</div>-zsh</div>-zsh</div>';
   area.appendChild(div);
   area.scrollTop = area.scrollHeight; setTimeout(() => { area.scrollTop = area.scrollHeight; }, 100);
   return div;
