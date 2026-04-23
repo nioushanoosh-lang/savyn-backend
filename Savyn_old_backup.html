@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Savyn</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<style>
+:root {
+  --navy: #0f2137;
+  --navy2: #1a3352;
+  --emerald: #0e6655;
+  --emerald2: #1a8a70;
+  --emerald3: #25a882;
+  --emerald-pale: #e8f5f2;
+  --bg: #f4f7f5;
+  --surface: #ffffff;
+  --surface2: #f9fbfa;
+  --ink: #0f2137;
+  --ink3: #6b8c7a;
+  --border: rgba(14,102,85,0.1);
+  --red: #e53935;
+  --red-pale: #fdf0f0;
+  --shadow-sm: 0 2px 8px rgba(15,33,55,0.06);
+  --shadow: 0 4px 16px rgba(15,33,55,0.1);
+  --shadow-lg: 0 12px 40px rgba(15,33,55,0.16);
+  --r: 18px;
+  --r-sm: 12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;}
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+.page{display:none;flex:1;overflow-y:auto;padding-bottom:84px;}
+.page.active{display:block;animation:fadeUp 0.25s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,16px);z-index:100;box-shadow:0 -4px 20px rgba(15,33,55,0.05);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none;}
+.nav-ico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:17px;transition:background 0.2s;}
+.nav-lbl{font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink3);transition:color 0.2s;}
+.nav-btn.on .nav-ico{background:var(--emerald-pale);}
+.nav-btn.on .nav-lbl{color:var(--emerald);}
+
+/* SHARED */
+.dark-hdr{background:var(--navy);padding:52px 20px 24px;position:relative;overflow:hidden;}
+.dark-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(14,102,85,0.2) 0%,transparent 60%);pointer-events:none;}
+.hdr-inner{position:relative;z-index:1;}
+.eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--emerald3);font-weight:600;margin-bottom:4px;}
+.hdr-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1.1;}
+.hdr-title em{font-style:italic;color:var(--emerald3);}
+.sec{padding:18px 18px 0;}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;}
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;}
+.pill{display:inline-flex;align-items:center;background:var(--emerald-pale);border:1px solid rgba(14,102,85,0.15);color:var(--emerald);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--emerald),var(--emerald2));color:#fff;border:none;border-radius:var(--r-sm);padding:15px;font-size:15px;font-weight:700;font-family:'Jost',sans-serif;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px rgba(14,102,85,0.35);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(14,102,85,0.45);}
+.btn-primary:disabled{opacity:0.6;transform:none;cursor:not-allowed;}
+
+/* ══ HOME ══ */
+.home-hdr{background:var(--navy);padding:52px 20px 28px;position:relative;overflow:hidden;}
+.home-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 85% 15%,rgba(14,102,85,0.22) 0%,transparent 55%);pointer-events:none;}
+.home-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;position:relative;z-index:1;}
+.logo-row{display:flex;align-items:center;gap:9px;}
+.logo-box{width:36px;height:36px;background:linear-gradient(135deg,var(--emerald),var(--emerald2));border-radius:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(14,102,85,0.35);}
+.logo-box svg{width:20px;height:20px;}
+.logo-txt{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#fff;}
+.logo-txt em{font-style:italic;color:var(--emerald3);}
+.greeting-txt{font-size:12px;color:rgba(255,255,255,0.45);}
+.notif{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;position:relative;z-index:1;}
+
+/* Piggy savings card */
+.piggy-card{margin:16px 18px 0;background:var(--navy);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow-lg);}
+.piggy-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 85% 10%,rgba(14,102,85,0.25) 0%,transparent 55%);pointer-events:none;}
+.piggy-inner{position:relative;z-index:1;}
+.piggy-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.piggy-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.45);font-weight:600;}
+.piggy-live{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--emerald3);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--emerald3);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.piggy-amount{font-family:'Playfair Display',serif;font-size:42px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:4px;}
+.piggy-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:16px;}
+.piggy-bar-wrap{margin-bottom:14px;}
+.piggy-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.piggy-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--emerald),var(--emerald3));transition:width 1.2s cubic-bezier(0.16,1,0.3,1);}
+.piggy-bar-labels{display:flex;justify-content:space-between;}
+.piggy-bar-pct{font-size:11px;color:var(--emerald3);font-weight:600;}
+.piggy-bar-goal{font-size:11px;color:rgba(255,255,255,0.35);}
+.piggy-stats{display:flex;gap:8px;}
+.piggy-stat{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;}
+.piggy-stat-lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);font-weight:600;margin-bottom:3px;}
+.piggy-stat-val{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--emerald3);}
+
+/* Daily save animation */
+.daily-save-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--emerald);color:#fff;border-radius:30px;padding:10px 20px;font-size:13px;font-weight:600;font-family:'Jost',sans-serif;box-shadow:var(--shadow-lg);z-index:999;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;}
+.daily-save-toast.show{transform:translateX(-50%) translateY(0);}
+
+/* Recommendation */
+.rec-card{margin:14px 18px 0;background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;}
+.rec-hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:14px 18px;display:flex;align-items:center;gap:8px;}
+.rec-dot{width:6px;height:6px;border-radius:50%;background:var(--emerald3);animation:blink 2s infinite;}
+.rec-hdr-txt{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--emerald3);font-weight:700;}
+.rec-body{padding:18px;}
+.rec-msg{font-size:16px;color:var(--ink);line-height:1.55;margin-bottom:14px;font-weight:400;}
+.rec-msg strong{font-weight:700;color:var(--navy);}
+.rec-msg .em{color:var(--emerald);font-weight:600;}
+.rec-chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.chip{background:var(--emerald-pale);border:1px solid rgba(14,102,85,0.12);border-radius:10px;padding:8px 12px;text-align:center;}
+.chip-lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:2px;}
+.chip-val{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--emerald);}
+
+/* Connect bank */
+.connect-card{margin:14px 18px 0;background:linear-gradient(135deg,var(--emerald),var(--emerald2));border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:var(--shadow);transition:all 0.2s;}
+.connect-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg);}
+.connect-icon{width:46px;height:46px;background:rgba(255,255,255,0.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.connect-txt-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+.connect-txt-sub{font-size:12px;color:rgba(255,255,255,0.7);}
+.connect-arrow{margin-left:auto;font-size:20px;color:rgba(255,255,255,0.6);}
+
+/* ══ LOANS ══ */
+.loan-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px;}
+.loan-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.loan-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;}
+.loan-name{font-size:15px;font-weight:600;color:var(--ink);}
+.loan-type{font-size:11px;color:var(--ink3);}
+.apr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.apr-badge.high{background:var(--red-pale);color:var(--red);border:1px solid rgba(229,57,53,0.15);}
+.apr-badge.low{background:var(--emerald-pale);color:var(--emerald);border:1px solid rgba(14,102,85,0.15);}
+.loan-progress-labels{display:flex;justify-content:space-between;margin-bottom:5px;}
+.loan-progress-label{font-size:11px;color:var(--ink3);}
+.loan-progress-value{font-size:11px;font-weight:600;color:var(--ink);}
+.progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-bottom:4px;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--emerald),var(--emerald3));transition:width 0.8s ease;}
+.progress-fill.red{background:linear-gradient(90deg,var(--red),#ef5350);}
+.loan-note{font-size:11px;color:var(--ink3);margin-bottom:12px;}
+.loan-stats{display:flex;gap:8px;}
+.loan-stat{flex:1;background:var(--surface2);border-radius:10px;padding:10px;text-align:center;}
+.loan-stat-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:3px;}
+.loan-stat-val{font-size:13px;font-weight:700;color:var(--ink);}
+.avalanche-banner{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.av-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;}
+.av-sub{font-size:11px;color:rgba(255,255,255,0.45);}
+
+/* ══ AI CHAT ══ */
+.ai-hdr{background:var(--navy);padding:52px 20px 20px;position:relative;overflow:hidden;}
+.ai-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(14,102,85,0.2) 0%,transparent 60%);pointer-events:none;}
+.ai-hdr-inner{position:relative;z-index:1;}
+.ai-avatar{width:50px;height:50px;background:linear-gradient(135deg,var(--emerald),var(--emerald2));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px;box-shadow:0 6px 18px rgba(14,102,85,0.35);}
+.ai-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:3px;}
+.ai-desc{font-size:13px;color:rgba(255,255,255,0.45);}
+.quick-row{display:flex;gap:8px;padding:14px 18px;overflow-x:auto;scrollbar-width:none;}
+.quick-row::-webkit-scrollbar{display:none;}
+.qbtn{background:#fff;border:1px solid var(--border);border-radius:20px;padding:7px 13px;font-size:12px;font-weight:500;color:var(--emerald);white-space:nowrap;cursor:pointer;font-family:'Jost',sans-serif;transition:all 0.2s;flex-shrink:0;}
+.qbtn:hover{background:var(--emerald-pale);border-color:var(--emerald);}
+.chat-area{padding:14px 18px;display:flex;flex-direction:column;gap:10px;min-height:260px;overflow-x:hidden;width:100%;}
+.msg{display:flex;gap:9px;align-items:flex-end;max-width:100%;}
+.msg.user{flex-direction:row-reverse;}
+.msg-av{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.msg-av.ai{background:linear-gradient(135deg,var(--emerald),var(--emerald2));}
+.msg-av.user{background:var(--navy);}
+.bubble{max-width:78%;padding:11px 13px;border-radius:14px;font-size:14px;line-height:1.6;word-wrap:break-word;overflow-wrap:break-word;white-space:pre-wrap;min-width:0;max-width:75%;}
+.msg.ai .bubble{background:#fff;border:1px solid var(--border);color:var(--ink);border-bottom-left-radius:3px;box-shadow:var(--shadow-sm);}
+.msg.user .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:3px;}
+.bubble strong{font-weight:600;color:var(--emerald);}
+.msg.user .bubble strong{color:var(--emerald3);}
+.typing-indicator{display:flex;gap:3px;padding:3px 0;}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--ink3);animation:bounce 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-input-bar{position:sticky;bottom:72px;background:var(--bg);padding:10px 18px 12px;border-top:1px solid var(--border);display:flex;gap:9px;align-items:center;}
+.chat-input{flex:1;background:#fff;border:1px solid var(--border);border-radius:22px;padding:11px 15px;font-size:14px;font-family:'Jost',sans-serif;color:var(--ink);outline:none;transition:border-color 0.2s;}
+.chat-input::placeholder{color:var(--ink3);}
+.chat-input:focus{border-color:var(--emerald3);}
+.send-btn{width:40px;height:40px;background:linear-gradient(135deg,var(--emerald),var(--emerald2));border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#fff;flex-shrink:0;box-shadow:0 3px 10px rgba(14,102,85,0.35);transition:transform 0.2s;}
+.send-btn:hover{transform:scale(1.05);}
+
+/* ══ GOALS ══ */
+.goals-hdr{background:var(--navy);padding:52px 20px 24px;position:relative;overflow:hidden;}
+.goals-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 70%,rgba(14,102,85,0.18) 0%,transparent 60%);pointer-events:none;}
+.goals-hdr-inner{position:relative;z-index:1;}
+.goals-total-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:3px;}
+.goals-total-amt{font-family:'Playfair Display',serif;font-size:38px;font-weight:800;color:#fff;letter-spacing:-1.5px;margin-bottom:3px;}
+.goals-total-sub{font-size:13px;color:rgba(255,255,255,0.45);}
+.goal-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px;}
+.goal-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.goal-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:21px;}
+.goal-name{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.goal-sub{font-size:12px;color:var(--ink3);}
+.goal-amounts{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;}
+.goal-saved{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--emerald);}
+.goal-target{font-size:13px;color:var(--ink3);}
+.goal-bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.goal-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--emerald),var(--emerald3));transition:width 1s ease;}
+.goal-footer{display:flex;justify-content:space-between;}
+.goal-pct{font-size:12px;font-weight:600;color:var(--emerald);}
+.goal-eta{font-size:12px;color:var(--ink3);}
+.add-goal{width:100%;background:none;border:2px dashed var(--border);border-radius:var(--r);padding:17px;font-size:14px;font-weight:600;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Jost',sans-serif;transition:all 0.2s;}
+.add-goal:hover{border-color:var(--emerald);color:var(--emerald);background:var(--emerald-pale);}
+
+/* ══ PROFILE ══ */
+.profile-hdr{background:var(--navy);padding:52px 20px 30px;text-align:center;position:relative;overflow:hidden;}
+.profile-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(14,102,85,0.2) 0%,transparent 60%);pointer-events:none;}
+.profile-hdr-inner{position:relative;z-index:1;}
+.p-avatar{width:72px;height:72px;background:linear-gradient(135deg,var(--emerald),var(--emerald2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px;box-shadow:0 8px 22px rgba(14,102,85,0.4);}
+.p-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
+.p-email{font-size:13px;color:rgba(255,255,255,0.45);}
+.p-section{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:12px;}
+.p-row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;}
+.p-row:last-child{border-bottom:none;}
+.p-row:hover{background:var(--surface2);}
+.p-row-left{display:flex;align-items:center;gap:12px;}
+.p-row-ico{font-size:17px;width:22px;text-align:center;}
+.p-row-lbl{font-size:14px;font-weight:500;color:var(--ink);}
+.p-row-val{font-size:13px;color:var(--ink3);}
+.p-row-arr{font-size:16px;color:var(--ink3);}
+.signout{width:100%;background:none;border:1.5px solid rgba(229,57,53,0.25);border-radius:var(--r);padding:15px;font-size:14px;font-weight:600;color:var(--red);cursor:pointer;font-family:'Jost',sans-serif;transition:all 0.2s;}
+.signout:hover{background:var(--red-pale);}
+
+/* ══ ONBOARDING / SPLASH ══ */
+.splash{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center;background:var(--navy);position:relative;overflow:hidden;}
+.splash::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 20%,rgba(14,102,85,0.2) 0%,transparent 60%);pointer-events:none;}
+.splash-content{position:relative;z-index:1;width:100%;max-width:360px;}
+.splash-piggy{font-size:64px;margin-bottom:20px;animation:piggyWiggle 3s ease-in-out infinite;}
+@keyframes piggyWiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.splash-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1.1;margin-bottom:12px;}
+.splash-title em{font-style:italic;color:var(--emerald3);}
+.splash-sub{font-size:15px;color:rgba(255,255,255,0.55);line-height:1.65;margin-bottom:36px;font-weight:300;}
+.splash-features{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;text-align:left;}
+.splash-feat{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:13px 16px;}
+.splash-feat-ico{font-size:20px;flex-shrink:0;}
+.splash-feat-txt{font-size:13px;color:rgba(255,255,255,0.75);font-weight:400;line-height:1.4;}
+.splash-feat-txt strong{color:#fff;font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- DAILY SAVE TOAST -->
+<div class="daily-save-toast" id="toast">💰 You just saved $23 today!</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP SCREEN
+══════════════════════════════════════ -->
+<div class="screen active" id="appScreen">
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="home-hdr">
+      <div class="home-top">
+        <div class="logo-row">
+          <div class="logo-box">
+            <svg viewBox="0 0 20 20" fill="none">
+              <ellipse cx="10" cy="11" rx="6.5" ry="5.2" fill="white" opacity="0.9"/>
+              <text x="10" y="14" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#0e6655" text-anchor="middle">$</text>
+              <ellipse cx="15.5" cy="10.5" rx="2.2" ry="1.6" fill="white" opacity="0.7"/>
+              <circle cx="13.5" cy="8.5" r="1.1" fill="white"/>
+              <rect x="7" y="5" width="6" height="1.6" rx="0.8" fill="white" opacity="0.85"/>
+              <rect x="4" y="15.5" width="2.8" height="4" rx="1.4" fill="white" opacity="0.8"/>
+              <rect x="8" y="16" width="2.8" height="3.5" rx="1.4" fill="white" opacity="0.8"/>
+              <rect x="12" y="16" width="2.8" height="3.5" rx="1.4" fill="white" opacity="0.8"/>
+              <rect x="16" y="15.5" width="2.8" height="4" rx="1.4" fill="white" opacity="0.8"/>
+            </svg>
+          </div>
+          <div class="logo-txt">Sa<em>vyn</em></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="greeting-txt" id="greeting"></div>
+          <div class="notif">🔔</div>
+        </div>
+      </div>
+      <!-- Net worth -->
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:4px;">Total Saved</div>
+        <div style="font-family:'Playfair Display',serif;font-size:44px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:8px;" id="totalSaved">$847</div>
+        <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(37,168,130,0.18);border:1px solid rgba(37,168,130,0.25);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--emerald3);font-weight:500;">💚 $23 saved today</div>
+      </div>
+    </div>
+
+    <!-- Connect Bank Card -->
+    <div class="connect-card" id="connectCard" onclick="openPlaidLink()">
+      <div class="connect-icon">🏦</div>
+      <div>
+        <div class="connect-txt-title">Connect Your Bank</div>
+        <div class="connect-txt-sub">Takes 60 seconds · Bank-level security</div>
+      </div>
+      <div class="connect-arrow">›</div>
+    </div>
+
+    <!-- Piggy Savings Card -->
+    <div class="piggy-card">
+      <div class="piggy-inner">
+        <div class="piggy-top">
+          <div class="piggy-label">Your Rainy Day Fund 🐷</div>
+          <div class="piggy-live"><div class="live-dot"></div> Growing daily</div>
+        </div>
+        <div class="piggy-amount" id="piggyAmount">$847</div>
+        <div class="piggy-sub">Savyn saved this for you automatically</div>
+        <div class="piggy-bar-wrap">
+          <div class="piggy-bar"><div class="piggy-bar-fill" id="piggyBarFill" style="width:17%;"></div></div>
+          <div class="piggy-bar-labels">
+            <div class="piggy-bar-pct" id="piggyPct">17% of goal</div>
+            <div class="piggy-bar-goal">Goal: $5,000</div>
+          </div>
+        </div>
+        <div class="piggy-stats">
+          <div class="piggy-stat"><div class="piggy-stat-lbl">This Week</div><div class="piggy-stat-val">$94</div></div>
+          <div class="piggy-stat"><div class="piggy-stat-lbl">This Month</div><div class="piggy-stat-val">$320</div></div>
+          <div class="piggy-stat"><div class="piggy-stat-lbl">All Time</div><div class="piggy-stat-val" id="piggyAllTime">$847</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Recommendation -->
+    <div class="rec-card">
+      <div class="rec-hdr">
+        <div class="rec-dot"></div>
+        <div class="rec-hdr-txt">Today's Action</div>
+      </div>
+      <div class="rec-body">
+        <div class="rec-msg" id="recMsg">Pay <strong>$300 extra</strong> on your Capital One card today. You'll save <span class="em">$1,840 in interest</span> and finish <strong>8 months early.</strong></div>
+        <div class="rec-chips">
+          <div class="chip"><div class="chip-lbl">Interest Saved</div><div class="chip-val" id="chipInterest">$1,840</div></div>
+          <div class="chip"><div class="chip-lbl">Months Early</div><div class="chip-val" id="chipMonths">8 mo</div></div>
+          <div class="chip"><div class="chip-lbl">New Payoff</div><div class="chip-val" id="chipPayoff">Jul '26</div></div>
+        </div>
+        <button class="btn-primary" id="recBtn" onclick="confirmAction()">✓ Got it — I'll make this payment</button>
+      </div>
+    </div>
+
+    <!-- Debt freedom countdown -->
+    <div class="sec" style="margin-top:16px;margin-bottom:20px;">
+      <div class="sec-title">Debt Freedom Progress</div>
+      <div class="card" style="padding:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;">You're 38% debt free 🎉</div>
+            <div style="font-size:12px;color:var(--ink3);">$15,800 paid off · $25,400 remaining</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--emerald);">2027</div>
+            <div style="font-size:11px;color:var(--ink3);">debt free year</div>
+          </div>
+        </div>
+        <div style="height:10px;background:var(--bg);border-radius:5px;overflow:hidden;">
+          <div style="width:38%;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--emerald),var(--emerald3));transition:width 1s ease;"></div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--ink3);">Following Savyn's advice saves you <strong style="color:var(--emerald);">$1,840 in interest</strong> this year</div>
+      </div>
+    </div>
+  </div><!-- end home page -->
+
+
+  <!-- LOANS PAGE -->
+  <div class="page" id="page-loans">
+    <div class="dark-hdr">
+      <div class="hdr-inner">
+        <div class="eyebrow">Debt Destroyer</div>
+        <div class="hdr-title">Your <em>Loans</em></div>
+      </div>
+    </div>
+    <div class="sec" style="margin-top:18px;margin-bottom:20px;">
+      <div class="avalanche-banner">
+        <div style="font-size:24px;">🎯</div>
+        <div>
+          <div class="av-title">Avalanche Method Active</div>
+          <div class="av-sub">Highest APR first · Saves you the most money</div>
+        </div>
+      </div>
+
+      <!-- Loan 1 -->
+      <div class="loan-card">
+        <div class="loan-top">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="loan-ico" style="background:#fce4ec;">💳</div>
+            <div>
+              <div class="loan-name">Capital One Card</div>
+              <div class="loan-type" style="color:var(--emerald);font-weight:600;">⚡ Attacking Now</div>
+            </div>
+          </div>
+          <div class="apr-badge high">24.99% APR</div>
+        </div>
+        <div class="loan-progress-labels"><span class="loan-progress-label">Remaining</span><span class="loan-progress-value">$8,200</span></div>
+        <div class="progress-bar"><div class="progress-fill red" style="width:38%;"></div></div>
+        <div class="loan-note">38% paid off · Started at $13,200</div>
+        <div class="loan-stats">
+          <div class="loan-stat"><div class="loan-stat-lbl">Min Payment</div><div class="loan-stat-val">$200/mo</div></div>
+          <div class="loan-stat"><div class="loan-stat-lbl">Interest/mo</div><div class="loan-stat-val" style="color:var(--red);">$171</div></div>
+          <div class="loan-stat"><div class="loan-stat-lbl">Payoff Date</div><div class="loan-stat-val">Jul '26</div></div>
+        </div>
+      </div>
+
+      <!-- Loan 2 -->
+      <div class="loan-card">
+        <div class="loan-top">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="loan-ico" style="background:#e3f2fd;">🚗</div>
+            <div>
+              <div class="loan-name">Auto Loan</div>
+              <div class="loan-type">Next in line after Capital One</div>
+            </div>
+          </div>
+          <div class="apr-badge high">6.9% APR</div>
+        </div>
+        <div class="loan-progress-labels"><span class="loan-progress-label">Remaining</span><span class="loan-progress-value">$14,800</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:52%;"></div></div>
+        <div class="loan-note">52% paid off · Started at $30,800</div>
+        <div class="loan-stats">
+          <div class="loan-stat"><div class="loan-stat-lbl">Min Payment</div><div class="loan-stat-val">$385/mo</div></div>
+          <div class="loan-stat"><div class="loan-stat-lbl">Interest/mo</div><div class="loan-stat-val" style="color:var(--red);">$85</div></div>
+          <div class="loan-stat"><div class="loan-stat-lbl">Payoff Date</div><div class="loan-stat-val">Mar '28</div></div>
+        </div>
+      </div>
+
+      <!-- Loan 3 -->
+      <div class="loan-card">
+        <div class="loan-top">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="loan-ico" style="background:#e8f5e9;">🎓</div>
+            <div>
+              <div class="loan-name">Student Loan</div>
+              <div class="loan-type">Federal · Lowest priority</div>
+            </div>
+          </div>
+          <div class="apr-badge low">4.5% APR</div>
+        </div>
+        <div class="loan-progress-labels"><span class="loan-progress-label">Remaining</span><span class="loan-progress-value">$18,200</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:27%;"></div></div>
+        <div class="loan-note">27% paid off · Started at $25,000</div>
+        <div class="loan-stats">
+          <div class="loan-stat"><div class="loan-stat-lbl">Min Payment</div><div class="loan-stat-val">$220/mo</div></div>
+          <div class="loan-stat"><div class="loan-stat-lbl">Interest/mo</div><div class="loan-stat-val" style="color:var(--red);">$68</div></div>
+          <div class="loan-stat"><div class="loan-stat-lbl">Payoff Date</div><div class="loan-stat-val">Jun '31</div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end loans page -->
+
+
+  <!-- AI CHAT PAGE -->
+  <div class="page" id="page-ai">
+    <div class="ai-hdr">
+      <div class="ai-hdr-inner">
+        <div class="ai-avatar">💚</div>
+        <div class="ai-name">Savyn AI</div>
+        <div class="ai-desc">Ask me anything about your money</div>
+      </div>
+    </div>
+    <!-- Suggested questions intro -->
+    <div style="padding:14px 18px 4px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;">Not sure where to start? Try these 👇</div>
+      <div class="quick-row" style="padding:0;flex-wrap:wrap;gap:8px;">
+        <div class="qbtn" onclick="quickChat(this)">💳 Which loan should I pay first?</div>
+        <div class="qbtn" onclick="quickChat(this)">📅 When will I be debt free?</div>
+        <div class="qbtn" onclick="quickChat(this)">💰 How much can I safely save this week?</div>
+        <div class="qbtn" onclick="quickChat(this)">🎯 Am I on track with my goals?</div>
+        <div class="qbtn" onclick="quickChat(this)">☕ How much did I spend on fun things?</div>
+        <div class="qbtn" onclick="quickChat(this)">📈 How do I pay less interest?</div>
+        <div class="qbtn" onclick="quickChat(this)">🛡️ Do I have enough emergency savings?</div>
+        <div class="qbtn" onclick="quickChat(this)">🏠 When can I start saving for a home?</div>
+      </div>
+    </div>
+    <div class="chat-area" id="chatArea">
+      <div class="msg ai">
+        <div class="msg-av ai">💚</div>
+        <div class="bubble">Hey! I'm Savyn AI — your personal money coach 💚👋<br><br>I'm here to help you <strong>pay off debt faster</strong> and <strong>save more</strong> without the stress. No judgment, no jargon — just real advice that works 🎯<br><br>Not sure where to start? Tap one of the questions above — I've got you! Or just ask me anything on your mind 👇</div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask Savyn anything..."/>
+      <button class="send-btn" onclick="sendChat()">➤</button>
+    </div>
+  </div><!-- end ai page -->
+
+
+  <!-- GOALS PAGE -->
+  <div class="page" id="page-goals">
+    <div class="goals-hdr">
+      <div class="goals-hdr-inner">
+        <div class="goals-total-lbl">Total Saved</div>
+        <div class="goals-total-amt" id="goalsTotalAmt">$847</div>
+        <div class="goals-total-sub">Growing every day on autopilot 💚</div>
+      </div>
+    </div>
+    <div class="sec" style="margin-top:18px;margin-bottom:20px;">
+      <div class="sec-title">Your Goals</div>
+
+      <div class="goal-card">
+        <div class="goal-top">
+          <div class="goal-ico" style="background:#e8f5e9;">🛡️</div>
+          <div style="flex:1;">
+            <div class="goal-name">Emergency Fund</div>
+            <div class="goal-sub">3 months of expenses — highest priority</div>
+          </div>
+          <div class="pill">Active</div>
+        </div>
+        <div class="goal-amounts">
+          <div class="goal-saved">$847</div>
+          <div class="goal-target">of $5,000</div>
+        </div>
+        <div class="goal-bar"><div class="goal-fill" style="width:16.9%;"></div></div>
+        <div class="goal-footer">
+          <div class="goal-pct">17% complete</div>
+          <div class="goal-eta">~18 months at this rate</div>
+        </div>
+      </div>
+
+      <div class="goal-card">
+        <div class="goal-top">
+          <div class="goal-ico" style="background:#e3f2fd;">✈️</div>
+          <div>
+            <div class="goal-name">Vacation Fund</div>
+            <div class="goal-sub">Summer 2026 trip</div>
+          </div>
+        </div>
+        <div class="goal-amounts">
+          <div class="goal-saved">$0</div>
+          <div class="goal-target">of $2,000</div>
+        </div>
+        <div class="goal-bar"><div class="goal-fill" style="width:0%;"></div></div>
+        <div class="goal-footer">
+          <div class="goal-pct">0% complete</div>
+          <div class="goal-eta">Start saving to build momentum</div>
+        </div>
+      </div>
+
+      <div class="goal-card">
+        <div class="goal-top">
+          <div class="goal-ico" style="background:#fff3e0;">🏠</div>
+          <div>
+            <div class="goal-name">Home Down Payment</div>
+            <div class="goal-sub">20% down · Pay off debt first</div>
+          </div>
+        </div>
+        <div class="goal-amounts">
+          <div class="goal-saved">$0</div>
+          <div class="goal-target">of $80,000</div>
+        </div>
+        <div class="goal-bar"><div class="goal-fill" style="width:0%;"></div></div>
+        <div class="goal-footer">
+          <div class="goal-pct">0% complete</div>
+          <div class="goal-eta">Clear high-APR debt first to save faster</div>
+        </div>
+      </div>
+
+      <button class="add-goal" onclick="addGoal()">+ Add New Goal</button>
+    </div>
+  </div><!-- end goals page -->
+
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="profile-hdr">
+      <div class="profile-hdr-inner">
+        <div class="p-avatar">💚</div>
+        <div class="p-name" id="pName">Member</div>
+        <div class="p-email" id="pEmail"></div>
+      </div>
+    </div>
+    <div class="sec" style="margin-top:18px;margin-bottom:20px;">
+
+      <!-- Savings settings -->
+      <div class="sec-title">Savings Settings</div>
+      <div class="p-section">
+        <div class="p-row" onclick="openPlaidLink()">
+          <div class="p-row-left"><div class="p-row-ico">🏦</div><div class="p-row-lbl">Connected Bank</div></div>
+          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" id="bankStatus">Tap to connect</div><div class="p-row-arr">›</div></div>
+        </div>
+        <div class="p-row" onclick="showAggressiveness()">
+          <div class="p-row-left"><div class="p-row-ico">🎚️</div><div class="p-row-lbl">Daily Savings Amount</div></div>
+          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" id="aggrDisplay">Moderate</div><div class="p-row-arr">›</div></div>
+        </div>
+        <div class="p-row" onclick="showBills()">
+          <div class="p-row-left"><div class="p-row-ico">📋</div><div class="p-row-lbl">My Bills & Credit Cards</div></div>
+          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val">Add bills</div><div class="p-row-arr">›</div></div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="sec-title" style="margin-top:16px;">Notifications</div>
+      <div class="p-section">
+        <div class="p-row">
+          <div class="p-row-left"><div class="p-row-ico">💰</div><div class="p-row-lbl">Daily savings alerts</div></div>
+          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" style="color:var(--emerald);">On</div><div class="p-row-arr">›</div></div>
+        </div>
+        <div class="p-row">
+          <div class="p-row-left"><div class="p-row-ico">🎯</div><div class="p-row-lbl">Payment reminders</div></div>
+          <div style="display:flex;align-items:center;gap:6px;"><div class="p-row-val" style="color:var(--emerald);">On</div><div class="p-row-arr">›</div></div>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div class="sec-title" style="margin-top:16px;">Account</div>
+      <div class="p-section">
+        <div class="p-row"><div class="p-row-left"><div class="p-row-ico">📊</div><div class="p-row-lbl">Plan</div></div><div style="display:flex;align-items:center;gap:6px;"><div class="pill">Beta · Free</div><div class="p-row-arr">›</div></div></div>
+        <div class="p-row" onclick="window.location.href='/privacy.html'"><div class="p-row-left"><div class="p-row-ico">🔒</div><div class="p-row-lbl">Privacy Policy</div></div><div class="p-row-arr">›</div></div>
+        <div class="p-row" onclick="window.location.href='/terms.html'"><div class="p-row-left"><div class="p-row-ico">📄</div><div class="p-row-lbl">Terms of Service</div></div><div class="p-row-arr">›</div></div>
+        <div class="p-row" onclick="window.location.href='mailto:hello@savynapp.com'"><div class="p-row-left"><div class="p-row-ico">💬</div><div class="p-row-lbl">Contact Support</div></div><div class="p-row-arr">›</div></div>
+      </div>
+
+      <button class="signout" onclick="logout()">Sign Out</button>
+      <div style="text-align:center;margin-top:18px;font-size:11px;color:var(--ink3);">Savyn v1.0 Beta · savynapp.com 💚</div>
+    </div>
+  </div><!-- end profile page -->
+
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <button class="nav-btn on" onclick="goTo('home',this)"><div class="nav-ico">🏠</div><div class="nav-lbl">Home</div></button>
+    <button class="nav-btn" onclick="goTo('loans',this)"><div class="nav-ico">📉</div><div class="nav-lbl">Loans</div></button>
+    <button class="nav-btn" onclick="goTo('ai',this)"><div class="nav-ico">💚</div><div class="nav-lbl">Savyn AI</div></button>
+    <button class="nav-btn" onclick="goTo('goals',this)"><div class="nav-ico">🎯</div><div class="nav-lbl">Goals</div></button>
+    <button class="nav-btn" onclick="goTo('profile',this)"><div class="nav-ico">👤</div><div class="nav-lbl">Profile</div></button>
+  </nav>
+
+</div><!-- end app screen -->
+
+<script>
+const BACKEND = 'https://savyn-backend-production.up.railway.app';
+
+// ── AUTH ──
+const token = localStorage.getItem('savyn_token');
+const email = localStorage.getItem('savyn_email') || '';
+if (!token) { window.location.href = '/login.html'; }
+
+// Set user info
+const first = email.split('@')[0];
+const displayName = first.charAt(0).toUpperCase() + first.slice(1);
+document.getElementById('greeting').textContent = 'Hi ' + displayName + ' 👋';
+document.getElementById('pName').textContent = displayName;
+document.getElementById('pEmail').textContent = email;
+
+// ── NAVIGATION ──
+function goTo(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (btn) btn.classList.add('on');
+  document.getElementById('page-' + page).scrollTop = 0;
+}
+
+// ── LOGOUT ──
+function logout() {
+  ['savyn_token','savyn_email','savyn_user_id','savyn_link_token'].forEach(k => localStorage.removeItem(k));
+  window.location.href = '/login.html';
+}
+
+// ── DAILY SAVE TOAST (Digit magic) ──
+function showSaveToast(amount) {
+  const toast = document.getElementById('toast');
+  toast.textContent = '💰 Savyn just saved $' + amount + ' for you today!';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+// Simulate Digit-style daily save notification on load
+setTimeout(() => showSaveToast(23), 2000);
+
+// ── PLAID ──
+async function openPlaidLink() {
+  try {
+    const res = await fetch(BACKEND + '/api/create-link-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!data.link_token) throw new Error('No token');
+    localStorage.setItem('savyn_link_token', data.link_token);
+    const handler = Plaid.create({
+      token: data.link_token,
+      receivedRedirectUri: window.location.href.includes('?oauth_state_id=') ? window.location.href : undefined,
+      onSuccess: async (public_token) => {
+        await fetch(BACKEND + '/api/exchange-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ public_token })
+        });
+        document.getElementById('connectCard').innerHTML = '<div class="connect-icon">✅</div><div><div class="connect-txt-title">Bank Connected!</div><div class="connect-txt-sub">Your data is loading...</div></div>';
+        document.getElementById('bankStatus').textContent = 'Connected';
+        loadData();
+      },
+      onExit: (err) => { if (err) console.log('Plaid exit:', err); }
+    });
+    handler.open();
+  } catch (err) { console.error('Plaid error:', err); }
+}
+
+// OAuth redirect handling
+if (window.location.href.includes('?oauth_state_id=')) {
+  const saved = localStorage.getItem('savyn_link_token');
+  if (saved) {
+    const h = Plaid.create({
+      token: saved,
+      receivedRedirectUri: window.location.href,
+      onSuccess: async (public_token) => {
+        localStorage.removeItem('savyn_link_token');
+        await fetch(BACKEND + '/api/exchange-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ public_token })
+        });
+        loadData();
+      },
+      onExit: () => {}
+    });
+    h.open();
+  }
+}
+
+// ── LOAD REAL DATA ──
+async function loadData() {
+  try {
+    const headers = {"Authorization": "Bearer " + token};
+    const [balRes, optRes] = await Promise.all([
+      fetch(BACKEND + "/api/balances", { headers }),
+      fetch(BACKEND + "/api/optimize", { headers })
+    ]);
+    const bal = await balRes.json();
+    const opt = await optRes.json();
+    if (bal.accounts) {
+      let checking = 0;
+      bal.accounts.forEach(function(a) { if (a.type === "depository") checking += a.balances.current || 0; });
+      const fmt = "$" + Math.round(checking).toLocaleString();
+      ["totalSaved","piggyAmount","piggyAllTime","goalsTotalAmt"].forEach(function(id) { const el = document.getElementById(id); if(el) el.textContent = fmt; });
+      const inst = (bal.item && bal.item.institution_name) ? bal.item.institution_name : "Your Bank";
+      const bs = document.getElementById("bankStatus"); if(bs) bs.textContent = inst + " connected";
+    }
+    if (opt.recommendation) {
+      const r = opt.recommendation;
+      const rm = document.getElementById("recMsg");
+      if(rm) rm.innerHTML = "Pay <strong>$" + r.extraPayment.toLocaleString() + " extra</strong> on your " + r.loanName + " this month. You could save <strong>$" + r.interestSaved.toLocaleString() + " in interest</strong> and finish " + r.monthsSaved + " months early. Savyn will not move this money. 💚";
+      const ci = document.getElementById("chipInterest"); if(ci) ci.textContent = "$" + r.interestSaved.toLocaleString();
+      const cm = document.getElementById("chipMonths"); if(cm) cm.textContent = r.monthsSaved + " mo";
+      const cp = document.getElementById("chipPayoff"); if(cp) cp.textContent = r.newPayoffDate;
+    } else if (opt.message) {
+      const rm2 = document.getElementById("recMsg"); if(rm2) rm2.textContent = opt.message;
+    }
+  } catch (err) { console.log("Data load error:", err); }
+}
+    }
+
+    if (opt.recommendation) {
+      const r = opt.recommendation;
+      document.getElementById('recMsg').innerHTML =
+        'Pay <strong>$' + r.extraPayment.toLocaleString() + ' extra</strong> on your ' + r.loanName +
+        ' today. You\'ll save <span class="em">$' + r.interestSaved.toLocaleString() + ' in interest</span> and finish <strong>' + r.monthsSaved + ' months early.</strong>';
+      document.getElementById('chipInterest').textContent = '$' + r.interestSaved.toLocaleString();
+      document.getElementById('chipMonths').textContent = r.monthsSaved + ' mo';
+      document.getElementById('chipPayoff').textContent = r.newPayoffDate;
+    }
+  } catch (err) { console.log('Data load error:', err); }
+}
+
+window.addEventListener('load', loadData);
+
+// ── CONFIRM PAYMENT ──
+function confirmAction() {
+  const btn = document.getElementById('recBtn');
+  btn.textContent = '🎉 Amazing! You\'re saving thousands!';
+  btn.style.background = 'linear-gradient(135deg,#25a882,#1a8a70)';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✓ Got it — I\'ll make this payment';
+    btn.style.background = '';
+    btn.disabled = false;
+  }, 3000);
+}
+
+// ── AI CHAT ──
+const history = [{ role: 'assistant', content: "Hey! I'm your Savyn AI advisor. I can see you have $41,200 across 3 loans. Your Capital One at 24.99% APR is the most expensive. Ask me anything!" }];
+
+function quickChat(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  sendChat();
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMsg('user', msg);
+  history.push({ role: 'user', content: msg });
+  const typing = showTyping();
+  try {
+    const res = await fetch(BACKEND + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ message: msg, history })
+    });
+    const data = await res.json();
+    typing.remove();
+    const reply = data.reply || "I'm here to help with your finances! 💚";
+    addMsg('ai', reply);
+    history.push({ role: 'assistant', content: reply });
+  } catch (err) {
+    typing.remove();
+    addMsg('ai', "Having trouble connecting. Try again in a moment! 💚");
+  }
+}
+
+function addMsg(role, text) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = '<div class="msg-av ' + role + '">' + (role === 'ai' ? '💚' : '👤') + '</div><div class="bubble">' + text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</div>';
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight; setTimeout(() => { area.scrollTop = area.scrollHeight; }, 100);
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = '<div class="msg-av ai">💚</div><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight; setTimeout(() => { area.scrollTop = area.scrollHeight; }, 100);
+  return div;
+}
+
+document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
+
+// ── GOALS ──
+function addGoal() {
+  alert('Goal creation coming soon! For now your Emergency Fund is growing automatically every day. 💚');
+}
+
+// ── PROFILE ACTIONS ──
+function showAggressiveness() {
+  const choice = prompt('How aggressive should Savyn be with daily savings?\n\n1. Conservative — save $5-15/day (safest)\n2. Moderate — save $15-35/day (recommended)\n3. Aggressive — save $35-60/day (maximum)\n\nEnter 1, 2, or 3:');
+  const map = { '1': 'Conservative', '2': 'Moderate', '3': 'Aggressive' };
+  if (map[choice]) {
+    document.getElementById('aggrDisplay').textContent = map[choice];
+    alert('Updated to ' + map[choice] + '! Savyn will adjust your daily savings starting tomorrow. 💚');
+  }
+}
+
+function showBills() {
+  alert('Coming soon! You\'ll be able to add:\n\n• Monthly credit card bills\n• Quarterly expenses (insurance, taxes)\n• Annual bills\n\nThis helps Savyn calculate a safer savings buffer so you never overdraft. 💚');
+}
+</script>
+</body>
+</html>
