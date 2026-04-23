@@ -296,17 +296,17 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           <div class="piggy-live"><div class="live-dot"></div> Growing daily</div>
         </div>
         <div class="piggy-amount" id="piggyAmount">$847</div>
-        <div class="piggy-sub">Savyn saved this for you automatically</div>
+        <div class="piggy-sub">Real auto-savings coming soon</div>
         <div class="piggy-bar-wrap">
           <div class="piggy-bar"><div class="piggy-bar-fill" id="piggyBarFill" style="width:17%;"></div></div>
           <div class="piggy-bar-labels">
-            <div class="piggy-bar-pct" id="piggyPct">17% of goal</div>
+            <div class="piggy-bar-pct" id="piggyPct">0% of goal</div>
             <div class="piggy-bar-goal">Goal: $5,000</div>
           </div>
         </div>
         <div class="piggy-stats">
-          <div class="piggy-stat">$—<div class="piggy-stat-lbl">This Week</div>$—<div class="piggy-stat-val">$94</div>$—</div>
-          <div class="piggy-stat">$—<div class="piggy-stat-lbl">This Month</div>$—<div class="piggy-stat-val">$320</div>$—</div>
+          <div class="piggy-stat">$—<div class="piggy-stat-lbl">This Week</div>$—<div class="piggy-stat-val">$0</div>$—</div>
+          <div class="piggy-stat">$—<div class="piggy-stat-lbl">This Month</div>$—<div class="piggy-stat-val">$0</div>$—</div>
           <div class="piggy-stat">$—<div class="piggy-stat-lbl">All Time</div>$—<div class="piggy-stat-val" id="piggyAllTime">$847</div>$—</div>
         </div>
       </div>
@@ -325,7 +325,7 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
           <div class="chip"><div class="chip-lbl">Months Early</div><div class="chip-val" id="chipMonths">8 mo</div></div>
           <div class="chip"><div class="chip-lbl">New Payoff</div><div class="chip-val" id="chipPayoff">Jul '26</div></div>
         </div>
-        <button class="btn-primary" id="recBtn" onclick="confirmAction()">✓ Got it — I'll make this payment</button>
+        <button class="btn-primary" id="recBtn" onclick="confirmAction()">✓ Got it! I'll make this payment</button>
       </div>
     </div>
 
@@ -335,8 +335,8 @@ body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);min-hei
       <div class="card" style="padding:18px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;">You're 38% debt free 🎉</div>
-            <div style="font-size:12px;color:var(--ink3);">$15,800 paid off · $25,400 remaining</div>
+            <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;">You're Debt payoff in progress 🎉</div>
+            <div style="font-size:12px;color:var(--ink3);">$0 paid off · connect bank to track</div>
           </div>
           <div style="text-align:right;">
             <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--emerald);">2027</div>
@@ -756,7 +756,7 @@ function confirmAction() {
   btn.style.background = 'linear-gradient(135deg,#25a882,#1a8a70)';
   btn.disabled = true;
   setTimeout(() => {
-    btn.textContent = '✓ Got it — I\'ll make this payment';
+    btn.textContent = '✓ Got it! I\'ll make this payment';
     btn.style.background = '';
     btn.disabled = false;
   }, 3000);
