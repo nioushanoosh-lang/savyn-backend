@@ -733,11 +733,6 @@ async function loadData() {
       const ci = document.getElementById("chipInterest"); if(ci) ci.textContent = "$" + r.interestSaved.toLocaleString();
       const cm = document.getElementById("chipMonths"); if(cm) cm.textContent = r.monthsSaved + " mo";
       const cp = document.getElementById("chipPayoff"); if(cp) cp.textContent = r.newPayoffDate;
-    } else if (opt.message) {
-      const rm2 = document.getElementById("recMsg"); if(rm2) rm2.textContent = opt.message;
-    }
-  } catch (err) { console.log("Data load error:", err); }
-}
     }
 
     if (opt.recommendation) {
