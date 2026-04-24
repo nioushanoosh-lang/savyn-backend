@@ -37,7 +37,7 @@ async function initDB() {
     );
     CREATE TABLE IF NOT EXISTS user_bills (
       id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id),
+      user_id INTEGER REFERENCES users(id) UNIQUE,
       cc_monthly NUMERIC DEFAULT 0,
       quarterly_annual_monthly NUMERIC DEFAULT 0,
       seasonal_monthly NUMERIC DEFAULT 0,
@@ -557,6 +557,40 @@ app.get('/api/optimize', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Optimizer error:', err.response ? JSON.stringify(err.response.data) : err.message);
     res.status(500).json({ error: 'Optimizer failed: ' + err.message });
+  }
+});
+
+
+// ── USER SETTINGS ──
+app.post('/api/settings', authenticateToken, async (req, res) => {
+  try {
+    const { aggressiveness, cc_monthly, quarterly_annual_monthly, irregular_expenses } = req.body;
+    await pool.query(`
+      INSERT INTO user_bills (user_id, aggressiveness, cc_monthly, quarterly_annual_monthly, irregular_expenses, updated_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      ON CONFLICT (user_id) DO UPDATE SET
+        aggressiveness = EXCLUDED.aggressiveness,
+        cc_monthly = EXCLUDED.cc_monthly,
+        quarterly_annual_monthly = EXCLUDED.quarterly_annual_monthly,
+        irregular_expenses = EXCLUDED.irregular_expenses,
+        updated_at = NOW()
+    `, [req.user.userId, aggressiveness || 'moderate', cc_monthly || 0, quarterly_annual_monthly || 0, irregular_expenses || 0]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Settings error:', err.message);
+    res.status(500).json({ error: 'Failed to save settings' });
+  }
+});
+
+app.get('/api/settings', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM user_bills WHERE user_id = $1', [req.user.userId]);
+    if (result.rows.length === 0) {
+      return res.json({ aggressiveness: 'moderate', cc_monthly: 0, quarterly_annual_monthly: 0, irregular_expenses: 0 });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get settings' });
   }
 });
 

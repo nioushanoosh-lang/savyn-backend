@@ -624,16 +624,50 @@ function showTyping() {
 document.getElementById('chatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendChat(); });
 
 function showAggressiveness() {
-  const choice = prompt('How aggressive should Savyn be with daily savings?\n\n1. Conservative\n2. Moderate\n3. Aggressive\n\nEnter 1, 2, or 3:');
-  const map = { '1': 'Conservative', '2': 'Moderate', '3': 'Aggressive' };
-  if (map[choice]) { document.getElementById('aggrDisplay').textContent = map[choice]; showToast('Updated to ' + map[choice] + '! 💚'); }
+  const choice = prompt('How aggressive should Savyn be with daily savings?\n\n1. Conservative — save less, keep more buffer\n2. Moderate — balanced approach (recommended)\n3. Aggressive — save more, smaller buffer\n\nEnter 1, 2, or 3:');
+  const map = { '1': 'conservative', '2': 'moderate', '3': 'aggressive' };
+  const labels = { '1': 'Conservative', '2': 'Moderate', '3': 'Aggressive' };
+  if (map[choice]) {
+    document.getElementById('aggrDisplay').textContent = labels[choice];
+    fetch(BACKEND + '/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ aggressiveness: map[choice] })
+    }).then(function() { showToast('Savings aggressiveness updated! 💚'); });
+  }
 }
 
 function showBills() {
-  alert('Bill tracking coming soon!\n\nYou will be able to add:\n- Monthly credit card bills\n- Quarterly expenses\n- Annual bills\n\nThis helps Savyn calculate a safer daily savings amount. 💚');
+  const ccBills = prompt('Monthly credit card bills total (enter amount, e.g. 500):');
+  if (ccBills === null) return;
+  const quarterly = prompt('Quarterly/annual bills averaged monthly (insurance, subscriptions, etc):');
+  if (quarterly === null) return;
+  const irregular = prompt('Irregular expenses averaged monthly (car repairs, medical, etc):');
+  if (irregular === null) return;
+  fetch(BACKEND + '/api/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({
+      cc_monthly: parseFloat(ccBills) || 0,
+      quarterly_annual_monthly: parseFloat(quarterly) || 0,
+      irregular_expenses: parseFloat(irregular) || 0
+    })
+  }).then(function() { showToast('Bills saved! Savyn will use this for better recommendations. 💚'); });
 }
 
-window.addEventListener('load', loadData);
+async function loadSettings() {
+  try {
+    const res = await fetch(BACKEND + '/api/settings', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (data.aggressiveness) {
+      const labels = { conservative: 'Conservative', moderate: 'Moderate', aggressive: 'Aggressive' };
+      const el = document.getElementById('aggrDisplay');
+      if (el) el.textContent = labels[data.aggressiveness] || 'Moderate';
+    }
+  } catch (err) { console.log('Settings load error:', err); }
+}
+
+window.addEventListener('load', function() { loadData(); loadSettings(); });
 setTimeout(function() { showToast('💚 Welcome back, ' + displayName + '!'); }, 1500);
 </script>
 </body>
